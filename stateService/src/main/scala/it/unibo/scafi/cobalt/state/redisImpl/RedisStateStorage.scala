@@ -1,9 +1,9 @@
-package it.unibi.scafi.cobalt.state.redisImpl
+package it.unibo.scafi.cobalt.state.redisImpl
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
 import com.redis._
-import it.unibi.scafi.cobalt.state.StateDatabase
+import it.unibo.scafi.cobalt.state.StateStorage
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -12,27 +12,22 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti on 04/01/2017.
   */
-trait RedisStateDatabase extends StateDatabase{
-  override type KEY = String
-  override type STATE = ExportImpl
-
-  class ExportImpl extends Export{
-  }
+trait RedisStateStorage extends StateStorage { self : StateStorage.Dependency=>
 
   val redisClient = new RedisClient("localhost",6379)
 
-  override def store(key: KEY)(state: STATE) = {
+  override def store(key: ID)(state: EXPORT) = {
     redisClient.set(key,Serializer.serialize(state))
   }
 
 
-  override def getAsync(key: KEY) = Future{
+  override def getAsync(key: ID) = Future{
     this.get(key)
   }
 
   import com.redis.serialization.Parse.Implicits.parseByteArray
-  override def get(key: KEY) = redisClient.get[Array[Byte]](key) match {
-    case Some (a) => Some(Serializer.deserialize[ExportImpl](a))
+  override def get(key: ID) = redisClient.get[Array[Byte]](key) match {
+    case Some (a) => Some(Serializer.deserialize[EXPORT](a))
     case _ => None
   }
 }

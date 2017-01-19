@@ -13,6 +13,7 @@ val rediscalaV = "1.8.0"
 val config      = "com.typesafe"  % "config"  % "1.3.0"
 
 val akkaHTTP    = "com.typesafe.akka" %% "akka-http" % "10.0.1"
+val sprayJson   = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1"
 val akkaActor   = "com.typesafe.akka" %% "akka-actor" % akkaV
 val akkaRemote  = "com.typesafe.akka" %% "akka-remote" % akkaV
 val akkaStream  = "com.typesafe.akka" %% "akka-stream" % akkaV
@@ -50,7 +51,7 @@ lazy val networkService = project.
   settings(
     name := "cobalt-NetworkService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala)
+    libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson)
   )
 
 // 'State Service' project definition

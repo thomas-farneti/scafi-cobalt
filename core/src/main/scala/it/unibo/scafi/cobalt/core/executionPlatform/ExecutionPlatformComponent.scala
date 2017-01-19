@@ -57,8 +57,8 @@ trait ExecutionPlatformComponent { self: NetworkComponent with AggregateApplicat
       activeApplications.find(p => p._1 == app.id) match {
         case Some(_) => return
         case None =>
-          val exec = new AggregateApplicationExecutor(new NetworkReadModel(),app)
-          activeApplications.put(app.id,exec)
+          //val exec = new AggregateApplicationExecutor(new NetworkReadModel(),app)
+          //activeApplications.put(app.id,exec)
       }
     }
 

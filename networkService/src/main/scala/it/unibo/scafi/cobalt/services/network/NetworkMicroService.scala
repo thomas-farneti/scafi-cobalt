@@ -9,14 +9,14 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by tfarneti.
   */
-object NetworkMicroService extends App with Service{
-  override implicit val system = ActorSystem()
-  override implicit val executor = system.dispatcher
-  override implicit val materializer = ActorMaterializer()
+object NetworkMicroService extends App{
+  implicit val system = ActorSystem()
+  implicit val executor = system.dispatcher
+  implicit val materializer = ActorMaterializer()
 
-  override val config = ConfigFactory.load()
-  override val logger = Logging(system, getClass)
+//  val config = ConfigFactory.load()
+//  val logger = Logging(system, getClass)
 
 
-  Http().bindAndHandle(null, config.getString("http.interface"), config.getInt("http.port"))
+  //Http().bindAndHandle(null, config.getString("http.interface"), config.getInt("http.port"))
 }

@@ -23,7 +23,6 @@ val scalaTest   = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 val rediscala   = "com.github.etaty" %% "rediscala" % rediscalaV
 
 val scafi_core  = "it.unibo.apice.scafiteam" % "scafi-core_2.11"  % "0.1.0"
-val redisClient = "net.debasishg" % "redisclient_2.11" % "3.3"
 
 // Cross-Building
 crossScalaVersions := Seq("2.11.8")
@@ -38,7 +37,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(networkService)
+  .aggregate(networkService,computingService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -48,7 +47,6 @@ lazy val core = project.
     //libraryDependencies ++= Seq()
   )
 
-// 'State Service' project definition
 lazy val networkService = project.
   settings(commonSettings: _*).
   settings(
@@ -58,20 +56,10 @@ lazy val networkService = project.
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
-
-// 'State Service' project definition
-lazy val stateService = project.
-  settings(commonSettings: _*).
-  settings(
-    name := "cobalt-StateService",
-    version := "0.1.0",
-    libraryDependencies ++= Seq(redisClient,scafi_core)
-  )
-
 lazy val computingService = project.
   settings(commonSettings: _*).
   settings(
     name := "cobalt-ComputingService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core)
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
   )

@@ -9,7 +9,7 @@ val scalaV = "2.11.8"
 val rediscalaV = "1.8.0"
 
 // Managed dependencies
-val config      = "com.typesafe"  % "config"  % "1.3.0"
+val config      = "com.typesafe"  % "config"  % "1.3.1"
 
 val akkaHTTP    = "com.typesafe.akka" %% "akka-http" % "10.0.1"
 val testKit     ="com.typesafe.akka" %% "akka-http-testkit" % "10.0.1"
@@ -52,10 +52,12 @@ lazy val core = project.
 lazy val networkService = project.
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-NetworkService",
+    name := "cobalt-networkService",
     version := "0.1.0",
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
   )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+
 
 // 'State Service' project definition
 lazy val stateService = project.

@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.services.network
+package it.unibo.scafi.cobalt.services.networkService
 
 import akka.actor.ActorSystem
 import akka.event.Logging
@@ -9,14 +9,12 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by tfarneti.
   */
-object NetworkMicroService extends App{
+object NetworkMicroService extends App with Config{
   implicit val system = ActorSystem()
   implicit val executor = system.dispatcher
   implicit val materializer = ActorMaterializer()
 
-//  val config = ConfigFactory.load()
-//  val logger = Logging(system, getClass)
+  val svc = new Router(new NetworkService(new NetworkRepoRedisImpl()))
 
-
-  //Http().bindAndHandle(null, config.getString("http.interface"), config.getInt("http.port"))
+  Http().bindAndHandle(svc.routes, config.getString("http.interface"), config.getInt("http.port"))
 }

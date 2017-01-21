@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.services.network
+package it.unibo.scafi.cobalt.services.networkService
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
@@ -51,7 +51,7 @@ class NetworkService(repo:NetworkRepository){
 
 }
 
-class Routing(service: NetworkService)(implicit actorSystem: ActorSystem, ec: ExecutionContext) extends Protocols{
+class Router(service: NetworkService)(implicit actorSystem: ActorSystem, ec: ExecutionContext) extends Protocols{
   val routes = (path("neighbors" / Segment) & get){ id =>
     complete{
       service.getNeighbors(id).map[ToResponseMarshallable] {

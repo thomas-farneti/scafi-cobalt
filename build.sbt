@@ -43,8 +43,8 @@ lazy val core = project.
   settings(commonSettings: _*).
   settings(
     name := "cobalt-core",
-    version := "0.1.0"
-    //libraryDependencies ++= Seq()
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scafi_core)
   )
 
 lazy val networkService = project.

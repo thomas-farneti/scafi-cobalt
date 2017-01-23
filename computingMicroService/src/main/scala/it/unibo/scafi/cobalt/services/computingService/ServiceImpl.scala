@@ -65,7 +65,7 @@ class GatewayImplGateway(implicit actorSystem: ActorSystem, materializer: ActorM
 class Router(service: Service)(implicit actorSystem: ActorSystem, ec: ExecutionContext){
   val routes = (path("test" / Segment) & get){ id=>
     complete{
-      service.computeState(new ComputeNewState(id)).map[ToResponseMarshallable] {
+      service.computeState(new ComputeNewSt(id)).map[ToResponseMarshallable] {
         _ => OK
       }
     }

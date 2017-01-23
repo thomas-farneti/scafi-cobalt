@@ -16,7 +16,7 @@ trait Repository{
 
 class Service(gateway: Gateway, repository: Repository)(implicit executionContext: ExecutionContext) {
 
-  def computeState(cmd: ComputeNewState): Future[Export] = {
+  def computeState(cmd: ComputeNewSt): Future[Export] = {
 
     val deviceExport = repository.loadExports(Set(cmd.deviceId)).map(_.head)
 

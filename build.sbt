@@ -37,7 +37,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(networkService,computingService)
+  .aggregate(core,cobtests,networkService,computingMicroService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -45,6 +45,15 @@ lazy val core = project.
     name := "cobalt-core",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core)
+  )
+
+lazy val cobtests = project.
+  dependsOn(core).
+  settings(commonSettings: _*).
+  settings(
+    name := "cobalt-tests",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scafi_core,scalaTest)
   )
 
 lazy val networkService = project.
@@ -56,7 +65,8 @@ lazy val networkService = project.
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
-lazy val computingService = project.
+lazy val computingMicroService = project.
+  dependsOn(core).
   settings(commonSettings: _*).
   settings(
     name := "cobalt-ComputingService",

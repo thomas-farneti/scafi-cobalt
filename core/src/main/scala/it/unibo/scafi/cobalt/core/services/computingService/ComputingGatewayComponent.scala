@@ -8,7 +8,7 @@ import scala.util.Try
 /**
   * Created by tfarneti.
   */
-trait ComputingGatewayComponent { self: BasicAbstractIncarnation =>
+trait ComputingGatewayComponent { self: Incarnation =>
   def gateway : Gateway
 
   trait Gateway{
@@ -16,7 +16,7 @@ trait ComputingGatewayComponent { self: BasicAbstractIncarnation =>
   }
 }
 
-trait ComputingMockGateway extends ComputingGatewayComponent{ self : BasicAbstractIncarnation =>
+trait ComputingMockGateway extends ComputingGatewayComponent{ self : BasicCobaltIncarnation =>
   def gateway = new MockGateway
 
   class MockGateway extends Gateway{

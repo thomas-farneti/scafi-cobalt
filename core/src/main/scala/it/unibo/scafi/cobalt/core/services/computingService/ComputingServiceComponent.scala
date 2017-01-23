@@ -9,26 +9,26 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ComputingServiceComponent { self:ComputingRepositoryComponent with BasicAbstractIncarnation =>
+trait ComputingServiceComponent { self: ComputingRepositoryComponent with BasicCobaltIncarnation =>
   def service: ComputingService
 
   trait ComputingService {
     def get(id: ID): Future[STATE]
 
-    def computeNewState(cmd: ComputeNewState): Future[State]
+    def computeNewState(cmd: ComputeNewState): Future[STATE]
   }
 }
 
-trait BasicComputingServiceComponent extends ComputingServiceComponent{ self: BasicComputingRepositoryComponent
+trait BasicComputingServiceComponent extends ComputingServiceComponent{ self: BasicAbstractComputingRepositoryComponent
   with ComputingGatewayComponent
-  with BasicAbstractIncarnation =>
+  with BasicCobaltIncarnation =>
 
   override def service = new BasicComputingService
 
   class BasicComputingService extends ComputingService{
     override def get(id: ID): Future[STATE] = ???
 
-    override def computeNewState(cmd: ComputeNewState): Future[State] = {
+    override def computeNewState(cmd: ComputeNewState): Future[STATE] = {
       for{
 //        nbrs <- gateway.GetAllNbrsIds(cmd.id).map(_ _)
         state <- Future.successful(new STATE(cmd.id,new EXPORT()))
@@ -37,14 +37,4 @@ trait BasicComputingServiceComponent extends ComputingServiceComponent{ self: Ba
       }yield state
     }
   }
-}
-
-
-
-
-object ApplicationLive {
-//  val userServiceComponent = new ComputingServiceImplComponent with RedisComputingRepositoryComponent with BasicAbstractIncarnation
-
-//  val userService = userServiceComponent.service
-
 }

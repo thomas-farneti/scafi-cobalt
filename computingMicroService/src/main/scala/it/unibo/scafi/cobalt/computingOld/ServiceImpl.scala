@@ -1,18 +1,20 @@
-package it.unibo.scafi.cobalt.services.computingService
+package it.unibo.scafi.cobalt.computingOld
+
 import java.io.IOException
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
+import it.unibo.scafi.cobalt.computingService.impl.Config
 import redis.{ByteStringFormatter, RedisClient}
 import spray.json.DefaultJsonProtocol
 
@@ -46,7 +48,7 @@ class RedisRepositoryImpl (implicit actorSystem: ActorSystem, materializer: Acto
 }
 
 class GatewayImplGateway(implicit actorSystem: ActorSystem, materializer: ActorMaterializer, ec: ExecutionContext) extends Gateway with DefaultJsonProtocol with Config{
-  private val networkServiceConnectionFlow = Http().outgoingConnection(identityManagerHost, identityManagerPort)
+  private val networkServiceConnectionFlow = Http().outgoingConnection("", 0)
 
   private def requestNetworkService(request: HttpRequest): Future[HttpResponse] = {
     Source.single(request).via(networkServiceConnectionFlow).runWith(Sink.head)

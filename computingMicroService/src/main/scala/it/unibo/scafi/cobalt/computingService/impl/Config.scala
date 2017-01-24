@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.services.computingService
+package it.unibo.scafi.cobalt.computingService.impl
 
 /**
   * Created by tfarneti.
@@ -14,8 +14,8 @@ trait Config {
   protected val redisPassword = config.getString("redis.password")
   protected val redisDb = config.getInt("redis.db")
 
-  protected val identityManagerHost = config.getString("services.identity-manager.host")
-  protected val identityManagerPort = config.getInt("services.identity-manager.port")
-  protected val tokenManagerHost = config.getString("services.token-manager.host")
-  protected val tokenManagerPort = config.getInt("services.token-manager.port")
+//  protected val identityManagerHost = config.getString("services.identity-manager.host")
+//  protected val identityManagerPort = config.getInt("services.identity-manager.port")
+//  protected val tokenManagerHost = config.getString("services.token-manager.host")
+//  protected val tokenManagerPort = config.getInt("services.token-manager.port")
 }

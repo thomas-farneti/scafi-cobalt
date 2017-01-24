@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.computing
+package it.unibo.scafi.cobalt.computingOld
 
 import it.unibo.scafi.core.{Core, Engine}
 import scala.collection.mutable.{ Map => MMap }

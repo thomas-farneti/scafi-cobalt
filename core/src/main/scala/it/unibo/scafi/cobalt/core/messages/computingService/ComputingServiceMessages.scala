@@ -1,11 +1,8 @@
 package it.unibo.scafi.cobalt.core.messages.computingService
 
-import it.unibo.scafi.cobalt.core.services.computingService.BasicCobaltIncarnation
-
 /**
   * Created by tfarneti.
   */
-object ComputingServiceMessages extends BasicCobaltIncarnation{
+case class ComputeNewStateCommand(id:String)
 
-  case class ComputeNewState(id:ID)
-}
+case class ComputeNewStateResponse(id:String)

@@ -1,7 +1,7 @@
-package it.unibo.scafi.cobalt.services.computingService
+package it.unibo.scafi.cobalt.computingService.impl
 
-import it.unibo.scafi.cobalt.core.services.computingService.{BasicCobaltIncarnation, ComputingGatewayComponent}
-import it.unibo.scafi.incarnations.BasicAbstractIncarnation
+import it.unibo.scafi.cobalt.computingService.ComputingGatewayComponent
+import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 
 import scala.concurrent.Future
 import scala.util.Try

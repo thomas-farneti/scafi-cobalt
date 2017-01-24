@@ -1,6 +1,7 @@
-package it.unibo.scafi.cobalt.core.services.computingService
+package it.unibo.scafi.cobalt.computingService
 
-import it.unibo.scafi.incarnations.{BasicAbstractIncarnation, Incarnation}
+import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
+import it.unibo.scafi.incarnations.Incarnation
 
 import scala.concurrent.Future
 import scala.util.Try

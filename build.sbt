@@ -12,7 +12,7 @@ val rediscalaV = "1.8.0"
 val config      = "com.typesafe"  % "config"  % "1.3.1"
 
 val akkaHTTP    = "com.typesafe.akka" %% "akka-http" % "10.0.1"
-val testKit     ="com.typesafe.akka" %% "akka-http-testkit" % "10.0.1"
+val testKit     = "com.typesafe.akka" %% "akka-http-testkit" % "10.0.1"
 val sprayJson   = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1"
 val akkaActor   = "com.typesafe.akka" %% "akka-actor" % akkaV
 val akkaRemote  = "com.typesafe.akka" %% "akka-remote" % akkaV
@@ -37,7 +37,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(core,cobtests,networkService,computingMicroService)
+  .aggregate(core,networkService,computingMicroService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -45,15 +45,6 @@ lazy val core = project.
     name := "cobalt-core",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core)
-  )
-
-lazy val cobtests = project.
-  dependsOn(core).
-  settings(commonSettings: _*).
-  settings(
-    name := "cobalt-tests",
-    version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,scalaTest)
   )
 
 lazy val networkService = project.

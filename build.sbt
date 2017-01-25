@@ -37,7 +37,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(core,networkService,computingMicroService)
+  .aggregate(core,networkMicroService,computingMicroService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -47,7 +47,7 @@ lazy val core = project.
     libraryDependencies ++= Seq(scafi_core)
   )
 
-lazy val networkService = project.
+lazy val networkMicroService = project.
   settings(commonSettings: _*).
   settings(
     name := "cobalt-networkService",
@@ -61,6 +61,24 @@ lazy val computingMicroService = project.
   settings(commonSettings: _*).
   settings(
     name := "cobalt-ComputingService",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+  )
+
+lazy val ingestionMicroService = project.
+  dependsOn(core).
+  settings(commonSettings: _*).
+  settings(
+    name := "cobalt-IngestionService",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+  )
+
+lazy val sensorManagerMicroService = project.
+  dependsOn(core).
+  settings(commonSettings: _*).
+  settings(
+    name := "cobalt-SensorManager",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
   )

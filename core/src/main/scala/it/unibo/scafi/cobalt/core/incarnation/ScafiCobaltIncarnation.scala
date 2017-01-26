@@ -5,7 +5,7 @@ import it.unibo.scafi.incarnations.Incarnation
 /**
   * Created by tfarneti.
   */
-trait BasicCobaltIncarnation extends Incarnation{
+trait ScafiCobaltIncarnation extends Incarnation{
   override type LSNS = String
   override type NSNS = String
   override type ID = String

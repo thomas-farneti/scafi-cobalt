@@ -1,31 +1,14 @@
 package it.unibo.scafi.cobalt.computingService.core
 
-import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
-import it.unibo.scafi.cobalt.core.messages.computingService.ComputeNewStateCommand
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
   * Created by tfarneti.
   */
-trait ComputingServiceComponent { self: ComputingServiceComponent.dependencies =>
-  def service = new BasicComputingService
+trait ComputingServiceComponent { self: ComputingServiceCore =>
+  def service: ComputingService
 
-  class BasicComputingService {
-    def get(id: ID): Future[STATE] = ???
-
-    def computeNewState(cmd: ComputeNewStateCommand): Future[Either[String,STATE]] = {
-      for {
-      //        nbrs <- gateway.GetAllNbrsIds(cmd.id).map(_ _)
-        state <- Future.successful(new STATE(cmd.id, new EXPORT()))
-        s <-  repository.set(cmd.id, state)
-
-      } yield Right(state)
-    }
+  trait ComputingService{
+    def computeNewState(deviceId:ID):Future[Either[String,STATE]]
   }
-}
-
-object ComputingServiceComponent {
-  type dependencies = BasicAbstractComputingRepositoryComponent  with ComputingGatewayComponent with BasicCobaltIncarnation
 }

@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.computingService.impl
+package it.unibo.scafi.cobalt.computingService
 
 /**
   * Created by tfarneti.

@@ -1,6 +1,6 @@
 package it.unibo.scafi.cobalt.computingService.core
 
-import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
+import it.unibo.scafi.cobalt.core.incarnation.ScafiCobaltIncarnation
 import it.unibo.scafi.incarnations.Incarnation
 
 import scala.concurrent.Future
@@ -8,7 +8,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ComputingRepositoryComponent { self:Incarnation =>
+trait ComputingRepositoryComponent { self: ComputingServiceCore =>
   def repository: Repository
 
   type STATE <: State
@@ -26,13 +26,15 @@ trait ComputingRepositoryComponent { self:Incarnation =>
   }
 }
 
-trait BasicAbstractComputingRepositoryComponent extends ComputingRepositoryComponent{ self: BasicCobaltIncarnation =>
+trait CobaltBasicIncarnation extends ComputingServiceCore{
+  override type ID = String
+  override type EXPORT = String
   override type STATE = StateImpl
 
-  case class StateImpl(id: ID,export: EXPORT) extends State
+  case class StateImpl(id: String,export: String) extends State
 }
 
-trait ComputingRepositoryMockComponent extends BasicAbstractComputingRepositoryComponent { self:BasicCobaltIncarnation =>
+trait ComputingRepositoryMockComponentCobalt extends ComputingRepositoryComponent{ self: CobaltBasicIncarnation =>
   override def repository = new MockRepo()
 
   class MockRepo extends Repository{

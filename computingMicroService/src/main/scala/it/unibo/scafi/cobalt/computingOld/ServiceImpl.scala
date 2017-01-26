@@ -14,7 +14,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
-import it.unibo.scafi.cobalt.computingService.impl.Config
+import it.unibo.scafi.cobalt.computingService.Config
 import redis.{ByteStringFormatter, RedisClient}
 import spray.json.DefaultJsonProtocol
 

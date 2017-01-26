@@ -7,7 +7,7 @@ import it.unibo.scafi.cobalt.core.messages.computingService.{ComputeNewStateComm
 import spray.json.DefaultJsonProtocol
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import it.unibo.scafi.cobalt.computingService.ComputingServiceComponent
+import it.unibo.scafi.cobalt.computingService.core.ComputingServiceComponent
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.Failure

@@ -1,7 +1,7 @@
 package it.unibo.scafi.cobalt.computingService.impl
 
 import akka.util.ByteString
-import it.unibo.scafi.cobalt.computingService.BasicAbstractComputingRepositoryComponent
+import it.unibo.scafi.cobalt.computingService.core.BasicAbstractComputingRepositoryComponent
 import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 import redis.{ByteStringFormatter, RedisClient}
 

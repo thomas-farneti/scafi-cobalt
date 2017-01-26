@@ -1,6 +1,6 @@
 package it.unibo.scafi.cobalt.computingService.impl
 
-import it.unibo.scafi.cobalt.computingService.ComputingGatewayComponent
+import it.unibo.scafi.cobalt.computingService.core.ComputingGatewayComponent
 import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 
 import scala.concurrent.Future

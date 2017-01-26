@@ -3,7 +3,7 @@ package it.unibo.scafi.cobalt.computingService.impl
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import it.unibo.scafi.cobalt.computingService.ComputingServiceComponent
+import it.unibo.scafi.cobalt.computingService.core.ComputingServiceComponent
 import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 import redis.RedisClient
 

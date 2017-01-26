@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.computingService
+package it.unibo.scafi.cobalt.computingService.core
 
 import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 import it.unibo.scafi.incarnations.Incarnation

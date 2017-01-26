@@ -1,11 +1,10 @@
-package it.unibo.scafi.cobalt.computingService
+package it.unibo.scafi.cobalt.computingService.core
 
 import it.unibo.scafi.cobalt.core.incarnation.BasicCobaltIncarnation
 import it.unibo.scafi.cobalt.core.messages.computingService.ComputeNewStateCommand
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Try
 
 /**
   * Created by tfarneti.

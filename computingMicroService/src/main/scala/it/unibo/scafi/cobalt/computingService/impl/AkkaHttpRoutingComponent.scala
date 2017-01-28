@@ -18,7 +18,7 @@ class AkkaHttpRoutingComponent(implicit val executor: ExecutionContextExecutor){
       post {
         complete {
           service.computeNewState(deviceId).map[ToResponseMarshallable] {
-            case Right(s) => OK
+            case Right(s) => deviceId+" -> "+s.export
             case Left(m) => InternalServerError -> m
           }
         }

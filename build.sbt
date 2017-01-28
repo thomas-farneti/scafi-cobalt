@@ -18,7 +18,7 @@ val sprayJson   = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1"
 val akkaActor   = "com.typesafe.akka" %% "akka-actor" % akkaV
 val akkaRemote  = "com.typesafe.akka" %% "akka-remote" % akkaV
 val akkaStream  = "com.typesafe.akka" %% "akka-stream" % akkaV
-val akkaStreamKafka = "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
+val rctRabbitMq = "io.scalac" %% "reactive-rabbit" % "1.1.4"
 
 val scalaTest   = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
@@ -53,15 +53,16 @@ lazy val core = project.
   settings(
     name := "cobalt-core",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core)
+    libraryDependencies ++= Seq(scafi_core,sprayJson)
   )
 
 lazy val networkMicroService = project.
+  dependsOn(core).
   settings(commonSettings: _*).
   settings(
     name := "cobalt-networkService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,akkaStreamKafka)
+    libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
@@ -80,7 +81,7 @@ lazy val ingestionMicroService = project.
   settings(
     name := "cobalt-IngestionService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,akkaStreamKafka)
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
 
 lazy val sensorManagerMicroService = project.

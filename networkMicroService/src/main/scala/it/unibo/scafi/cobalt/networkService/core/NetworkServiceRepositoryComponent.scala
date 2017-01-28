@@ -9,6 +9,10 @@ trait NetworkServiceRepositoryComponent {
   def repository : Repository
 
   trait Repository{
+    def getNbrsSpatial(deviceId: String): Future[Set[String]]
+
+    def updatePosition(deviceId: String, latitude: String, longitude: String) : Future[Boolean]
+
     def getNeighborsIdsForDevice(deviceId: String): Future[Set[String]]
 
     def addNeighborForDevice(deviceId: String,nbrId: String): Future[String]
@@ -37,5 +41,9 @@ trait NetworkServiceRepositoryMockComponent extends NetworkServiceRepositoryComp
     } else {
       Future.failed(new Exception)
     }
+
+    override def updatePosition(deviceId: String, latitude: String, longitude: String): Future[Boolean] = ???
+
+    override def getNbrsSpatial(deviceId: String): Future[Set[String]] = ???
   }
 }

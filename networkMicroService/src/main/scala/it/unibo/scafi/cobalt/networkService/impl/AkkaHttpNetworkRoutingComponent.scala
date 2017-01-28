@@ -28,7 +28,13 @@ class AkkaHttpNetworkRoutingComponent(implicit val executor: ExecutionContextExe
       put{
         complete(Created -> service.addNeighborForDevice(deviceId,nbrId))
       }
+    }~
+    path("nbrs" / "spatial" / Segment){ deviceId =>
+      get{
+        complete(service.getNbrsSpatial(deviceId))
+      }
     }
+
   }
 }
 

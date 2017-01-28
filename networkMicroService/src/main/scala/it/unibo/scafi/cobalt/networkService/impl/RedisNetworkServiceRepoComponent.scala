@@ -3,14 +3,14 @@ package it.unibo.scafi.cobalt.networkService.impl
 import it.unibo.scafi.cobalt.networkService.core.NetworkServiceRepositoryComponent
 import redis.RedisClient
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by tfarneti.
   */
 trait RedisNetworkServiceRepoComponent extends NetworkServiceRepositoryComponent{
   val redisClient : RedisClient
-  implicit val ec:ExecutionContext
 
   override def repository = new RedisRepository(redisClient)
 
@@ -22,5 +22,9 @@ trait RedisNetworkServiceRepoComponent extends NetworkServiceRepositoryComponent
     override def addNeighborForDevice(deviceId: String, nbrId: String): Future[String] = redisClient.sadd(deviceIdToRedisKey(deviceId),nbrId).map[String](_ => deviceId)
 
     override def removeNeighborForDevice(deviceId: String, nbrId: String): Future[String] = ???
+
+    override def getNbrsSpatial(deviceId: String): Future[Set[String]] = redisClient.geoRadiusByMember("netSvc:spatial",deviceId,100).map(_.toSet)
+
+    override def updatePosition(deviceId: String, latitude: String, longitude: String): Future[Boolean] = redisClient.geoAdd("netSvc:spatial",latitude.toDouble,longitude.toDouble,deviceId).map(_ => true)
   }
 }

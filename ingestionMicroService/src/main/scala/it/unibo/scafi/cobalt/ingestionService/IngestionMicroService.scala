@@ -7,7 +7,7 @@ import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 import it.unibo.scafi.cobalt.ingestionService.impl.{AkkaHttpIngestionRoutingComponent, RedisIngestionServiceRepoComponent}
 import redis.RedisClient
 
-import scala.concurrent.{ExecutionContextExecutor}
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * Created by tfarneti.
@@ -18,6 +18,8 @@ object IngestionMicroService extends App with Config{
   implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
 
   val router = new AkkaHttpIngestionRoutingComponent with IngestionServiceComponent with RedisIngestionServiceRepoComponent {
+    implicit val actorSystem = ActorSystem()
+    implicit val materializer = ActorMaterializer()
     override val redisClient: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
   }
 

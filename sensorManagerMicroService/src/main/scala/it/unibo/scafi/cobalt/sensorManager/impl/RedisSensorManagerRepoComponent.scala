@@ -4,6 +4,7 @@ import it.unibo.scafi.cobalt.sensorManager.core.SensorManagerRepositoryComponent
 import redis.RedisClient
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by tfarneti.
@@ -14,10 +15,13 @@ trait RedisSensorManagerRepoComponent extends SensorManagerRepositoryComponent{
 
   class RedisRepository(redisClient: RedisClient) extends Repository{
 
-    private def keyGen(deviceId:String, sensorName:String): String = s"sensors:$deviceId:$sensorName"
+    private def keyGen(deviceId:String): String = s"sensors:$deviceId"
 
-    override def getSensorValue(deviceId: String, sensorName: String): Future[Option[String]] = redisClient.get[String](keyGen(deviceId,sensorName))
+    override def getSensorValue(deviceId: String, sensorName: String): Future[Option[String]] = redisClient.hmget[String](keyGen(deviceId),sensorName).map(_.head)
 
-    override def getSensorsValues(deviceId: String): Future[Option[Map[String, String]]] = ???
+    override def getSensorsValues(deviceId: String): Future[Option[Map[String, String]]] = redisClient.hgetall[String](keyGen(deviceId)).map{
+      case  a if a.isEmpty => None
+      case a => Some(a)
+    }
   }
 }

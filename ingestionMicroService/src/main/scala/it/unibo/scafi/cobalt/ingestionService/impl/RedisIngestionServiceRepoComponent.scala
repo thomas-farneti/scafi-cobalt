@@ -14,15 +14,13 @@ trait RedisIngestionServiceRepoComponent extends IngestionServiceRepositoryCompo
 
   class RedisRepository(redisClient: RedisClient) extends Repository{
     override def setSensorValue(deviceId: String, sensorName: String, sensorValue: String): Future[Boolean] = {
-      redisClient.set(keyGen(deviceId,sensorName),sensorValue)
+      redisClient.hmset(keyGen(deviceId),Map(sensorName -> sensorValue))
     }
 
     override def setSensorsValues(deviceId: String, sensorsValues: Map[String, String]): Future[Boolean] = {
-      redisClient.mset(sensorsValues map {
-        case (k,v)  => keyGen(deviceId, k) -> v
-      })
+      redisClient.hmset(keyGen(deviceId),sensorsValues)
     }
 
-    private def keyGen(deviceId:String, sensorName:String): String = s"sensors:$deviceId:$sensorName"
+    private def keyGen(deviceId:String): String = s"sensors:$deviceId"
   }
 }

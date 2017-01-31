@@ -3,22 +3,35 @@ package it.unibo.scafi.cobalt.computingService
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import it.unibo.scafi.cobalt.computingService.core.{CobaltBasicIncarnation, ComputingMockServiceGateway}
+import it.unibo.scafi.cobalt.computingService.core.CobaltBasicIncarnation
 import it.unibo.scafi.cobalt.computingService.impl._
-import redis.RedisClient
+
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * Created by tfarneti.
   */
 
-object ComputingMicroService extends App with Config{
-  implicit val system = ActorSystem()
-  implicit val executor = system.dispatcher
-  implicit val materializer = ActorMaterializer()
+trait Environment extends AkkaComputingServiceComponent
+  with CobaltComputingServiceComponent
+  with RedisCobaltComputingRepoComponent
+  with DockerGatewayComponent
+  with CobaltBasicIncarnation
+  with ActorSystemProvider
+  with DockerConfig
+  with AkkaHttpConfig
+  with RedisConfiguration
+  with ServicesConfiguration
 
-  val env = new AkkaHttpRoutingComponent with CobaltComputingServiceComponent with RedisCobaltComputingRepoComponent with ComputingMockServiceGateway with CobaltBasicIncarnation {
-    override val redisClient: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
-  }
 
-  Http().bindAndHandle(env.routes, config.getString("http.interface"), config.getInt("http.port"))
+object ComputingMicroService extends App with Environment{
+
+  override implicit def impSystem: ActorSystem = ActorSystem()
+
+  override implicit def impExecutor: ExecutionContextExecutor = impSystem.dispatcher
+
+  override implicit def impMat: ActorMaterializer = ActorMaterializer()
+
+  Http().bindAndHandle(computingServiceRoutes, interface, port)
+
 }

@@ -19,10 +19,10 @@ import scala.util.Try
   */
 
 
-trait RedisComputingRepositoryImplScafi extends ComputingRepositoryComponent { self: CobaltBasicIncarnation with ScafiCobaltIncarnation =>
+trait RedisComputingRepositoryImplScafi extends ComputingRepositoryComponent { self: CobaltBasicIncarnation with ScafiCobaltIncarnation with RedisConfiguration with ActorSystemProvider=>
   val redisClient : RedisClient
 
-  override def repository = new RedisRepository(redisClient)
+  override def repository = new RedisRepository
 
   implicit val stateSerializer = new ByteStringFormatter[StateImpl] {
     override def serialize(data: StateImpl): ByteString = {
@@ -38,7 +38,9 @@ trait RedisComputingRepositoryImplScafi extends ComputingRepositoryComponent { s
     }
   }
 
-  class RedisRepository(redisClient: RedisClient) extends Repository{
+  class RedisRepository extends Repository{
+    val redisClient: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
+
     override def get(id: String): Future[Option[StateImpl]] = redisClient.get[StateImpl](id)
 
     override def set(id: String, state: StateImpl): Future[Boolean] = redisClient.set[StateImpl](id, state)

@@ -29,7 +29,7 @@ object NetworkMicroService extends App with Config{
 
   Http().bindAndHandle(router.routes, interface, port)
 
-  val connection = Connection()
+  val connection = Connection(config)
   connection.queueDeclare(Queue("sensor_events.networkMicroservice.queue",durable = true))
   connection.queueBind("sensor_events.networkMicroservice.queue","sensor_events","*.gps")
 

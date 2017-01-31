@@ -1,7 +1,5 @@
 package it.unibo.scafi.cobalt.core.messages
 
-import com.sun.tools.corba.se.idl.StringGen
-
 /**
   * Created by tfarneti.
   */

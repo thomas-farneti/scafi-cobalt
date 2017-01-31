@@ -19,6 +19,7 @@ val akkaActor   = "com.typesafe.akka" %% "akka-actor" % akkaV
 val akkaRemote  = "com.typesafe.akka" %% "akka-remote" % akkaV
 val akkaStream  = "com.typesafe.akka" %% "akka-stream" % akkaV
 val rctRabbitMq = "io.scalac" %% "reactive-rabbit" % "1.1.4"
+val scalaConsul = "com.codacy" %% "scala-consul" % "2.0.2"
 
 val scalaTest   = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
@@ -46,7 +47,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(core,networkMicroService,computingMicroService)
+  .aggregate(core,networkMicroService,computingMicroService,sensorManagerMicroService,ingestionMicroService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -65,6 +66,10 @@ lazy val networkMicroService = project.
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
+    .settings(
+      packageName in Docker := "networkservice"
+    )
+
 
 lazy val computingMicroService = project.
   dependsOn(core).
@@ -72,7 +77,11 @@ lazy val computingMicroService = project.
   settings(
     name := "cobalt-ComputingService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+  )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+  .settings(
+    packageName in Docker := "computingservice"
   )
 
 lazy val ingestionMicroService = project.
@@ -83,6 +92,10 @@ lazy val ingestionMicroService = project.
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+  .settings(
+    packageName in Docker := "ingestionservice"
+  )
 
 lazy val sensorManagerMicroService = project.
   dependsOn(core).
@@ -91,4 +104,8 @@ lazy val sensorManagerMicroService = project.
     name := "cobalt-SensorManager",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+  )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+  .settings(
+    packageName in Docker := "sensorservice"
   )

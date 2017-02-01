@@ -13,6 +13,10 @@ trait DockerConfig extends Configuration{
   override protected val config: Config = ConfigFactory.load()
 }
 
+trait TestConfig extends Configuration{
+  override protected val config: Config = ConfigFactory.load("test.conf")
+}
+
 trait AkkaHttpConfig extends Configuration{
   protected val interface: String = config.getString("http.interface")
   protected val port: Int = config.getInt("http.port")

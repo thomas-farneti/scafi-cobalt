@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
-import io.scalac.amqp.{Connection, Queue}
+import io.scalac.amqp.{Connection, Exchange, Queue, Topic}
 import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.core.messages.SensorData
 import it.unibo.scafi.cobalt.networkService.core.NetworkServiceComponent
@@ -30,8 +30,8 @@ object NetworkMicroService extends App with Config{
   Http().bindAndHandle(router.routes, interface, port)
 
   val connection = Connection(config)
-  connection.queueDeclare(Queue("sensor_events.networkMicroservice.queue",durable = true))
-  connection.queueBind("sensor_events.networkMicroservice.queue","sensor_events","*.gps")
+  connection.queueDeclare(Queue("sensor_events.networkMicroservice.queue",durable = true)).onComplete(_=>
+  connection.queueBind("sensor_events.networkMicroservice.queue","sensor_events","*.gps"))
 
   Source.fromPublisher(connection.consume(queue = "sensor_events.networkMicroservice.queue"))
       .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])

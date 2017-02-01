@@ -2,48 +2,12 @@ version: "3"
 
 services:
 
-  networkDb:
-    image: redis
-    ports:
-      - "6379"
-    networks:
-      networknet:
-        aliases:
-          - redis
-
-  computingDb:
-    image: redis
-    ports:
-      - "6379"
-    networks:
-      computingnet:
-        aliases:
-          - redis
-
-  sensorDb:
-    image: redis
-    ports:
-      - "6379"
-    networks:
-      sensornet:
-        aliases:
-          - redis
-
-  rabbitmq:
-    image: rabbitmq
-    ports:
-      - "5672:5672"
-      - "127.0.0.1:15672:15672"
-    networks:
-      - network
-
   networkService:
     image: networkservice:0.1.0
     ports:
       - "127.0.0.1:8081:8080"
     depends_on:
-      - networkDb
-      - rabbitmq
+      - ingestionService
     networks:
       network:
         aliases:
@@ -54,10 +18,6 @@ services:
     image: computingservice:0.1.0
     ports:
       - "127.0.0.1:8083:8080"
-    depends_on:
-      - computingDb
-      - networkService
-      - sensorService
     networks:
       - network
       - computingnet
@@ -66,8 +26,6 @@ services:
     image: sensorservice:0.1.0
     ports:
       - "8082:8080"
-    depends_on:
-      - sensorDb
     networks:
       sensornet:
       network:
@@ -78,9 +36,6 @@ services:
     image: ingestionservice:0.1.0
     ports:
       - "127.0.0.1:80:8080"
-    depends_on:
-      - sensorDb
-      - rabbitmq
     networks:
       - sensornet
       - network

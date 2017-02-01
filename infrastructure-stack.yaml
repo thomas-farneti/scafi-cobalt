@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+
+  networkDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      networknet:
+        aliases:
+          - redis
+
+  computingDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      computingnet:
+        aliases:
+          - redis
+
+  sensorDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      sensornet:
+        aliases:
+          - redis
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+      - "127.0.0.1:15672:15672"
+    networks:
+      - network
+
+networks:
+  network:
+  networknet:
+  sensornet:
+  computingnet:

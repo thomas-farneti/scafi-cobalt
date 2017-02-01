@@ -1,17 +1,14 @@
-package it.unibo.scafi.cobalt.computingService.impl
+package it.unibo.scafi.cobalt.computingService.impl.repository
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
-import akka.util
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.computingService.core.{CobaltBasicIncarnation, ComputingRepositoryComponent}
+import it.unibo.scafi.cobalt.computingService.impl.{ActorSystemProvider, RedisConfiguration}
 import it.unibo.scafi.cobalt.core.incarnation.ScafiCobaltIncarnation
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future
-import spray.json._
-import spray.json.DefaultJsonProtocol._
-
 import scala.util.Try
 
 /**

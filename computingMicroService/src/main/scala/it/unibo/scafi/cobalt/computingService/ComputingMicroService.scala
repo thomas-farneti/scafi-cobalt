@@ -5,6 +5,8 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import it.unibo.scafi.cobalt.computingService.core.CobaltBasicIncarnation
 import it.unibo.scafi.cobalt.computingService.impl._
+import it.unibo.scafi.cobalt.computingService.impl.gateway.DockerGatewayComponent
+import it.unibo.scafi.cobalt.computingService.impl.repository.RedisCobaltComputingRepoComponent
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -19,6 +21,7 @@ trait Environment extends AkkaComputingServiceComponent
   with CobaltBasicIncarnation
   with ActorSystemProvider
   with DockerConfig
+  //with TestConfig
   with AkkaHttpConfig
   with RedisConfiguration
   with ServicesConfiguration

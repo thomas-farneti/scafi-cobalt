@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.computingService.impl
+package it.unibo.scafi.cobalt.computingService.impl.gateway
 
 import java.io.IOException
 import java.net.InetAddress
@@ -11,6 +11,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
 import consul.Consul
 import it.unibo.scafi.cobalt.computingService.core.{CobaltBasicIncarnation, ComputingServiceGatewayComponent}
+import it.unibo.scafi.cobalt.computingService.impl.{ActorSystemProvider, ConsulConfiguration}
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.Future

@@ -1,15 +1,15 @@
-package it.unibo.scafi.cobalt.computingService.impl
+package it.unibo.scafi.cobalt.computingService.impl.gateway
 
 import java.io.IOException
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.StatusCodes.Success
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
-import com.typesafe.config.Config
 import it.unibo.scafi.cobalt.computingService.core.ComputingServiceGatewayComponent
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import it.unibo.scafi.cobalt.computingService.impl.{ActorSystemProvider, ServicesConfiguration}
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.Future

@@ -1,7 +1,8 @@
-package it.unibo.scafi.cobalt.computingService.impl
+package it.unibo.scafi.cobalt.computingService.impl.repository
 
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.computingService.core.{CobaltBasicIncarnation, ComputingRepositoryComponent}
+import it.unibo.scafi.cobalt.computingService.impl.{ActorSystemProvider, RedisConfiguration}
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future
@@ -32,6 +33,10 @@ trait RedisCobaltComputingRepoComponent extends ComputingRepositoryComponent { s
 
     override def set(id: String, state: StateImpl): Future[Boolean] = redisClient.set[StateImpl](id, state)
 
-    override def mGet(id: Set[String]): Future[Seq[Option[StateImpl]]] = redisClient.mget(id.toSeq: _*)
+    override def mGet(id: Set[String]): Future[Seq[Option[StateImpl]]] =
+      if(id.isEmpty)
+        Future.successful(Seq(None))
+      else
+        redisClient.mget(id.toSeq: _*)
   }
 }

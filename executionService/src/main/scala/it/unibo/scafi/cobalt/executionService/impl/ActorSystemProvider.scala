@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContextExecutor
   * Created by tfarneti.
   */
 trait ActorSystemProvider {
-  implicit def impSystem: ActorSystem
-  implicit def impExecutor: ExecutionContextExecutor
-  implicit def impMat: ActorMaterializer
+  implicit val impSystem: ActorSystem
+  implicit val impExecutor: ExecutionContextExecutor
+  implicit val impMat: ActorMaterializer
 }

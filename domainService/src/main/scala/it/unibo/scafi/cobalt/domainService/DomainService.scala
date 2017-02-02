@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContextExecutor
 /**
   * Created by tfarneti.
   */
-object DomainService extends App with Config{
+object DomainService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
@@ -27,13 +27,13 @@ object DomainService extends App with Config{
     override val redisClient: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
   }
 
-  Http().bindAndHandle(router.routes, interface, port)
+  Http().bindAndHandle(router.routes, interface , port)
 
   val connection = Connection(config)
-  connection.queueDeclare(Queue("sensor_events.networkMicroservice.queue",durable = true)).onComplete(_=>
-  connection.queueBind("sensor_events.networkMicroservice.queue","sensor_events","*.gps"))
+  connection.queueDeclare(Queue("sensor_events.domainMicroservice.queue",durable = true)).onComplete(_=>
+  connection.queueBind("sensor_events.domainMicroservice.queue","sensor_events","*.gps"))
 
-  Source.fromPublisher(connection.consume(queue = "sensor_events.networkMicroservice.queue"))
+  Source.fromPublisher(connection.consume(queue = "sensor_events.domainMicroservice.queue"))
       .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
       .mapAsync(4){ m=>
         val split = m.sensorValue.split(":")

@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+
+  redis:
+    image: redis
+    ports:
+      - "6379"
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+      - "127.0.0.1:15672:15672"
+
+  domain:
+    image: domainservice:0.1.0
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      - ingestion
+
+  executionService:
+    image: executionservice:0.1.0
+    ports:
+      - "127.0.0.1:8083:8080"
+    depends_on:
+      - ingestion
+
+  sensor:
+    image: sensorservice:0.1.0
+    ports:
+      - "8082:8080"
+
+  ingestionService:
+    image: ingestionservice:0.1.0
+    ports:
+      - "127.0.0.1:80:8080"
+    depends_on:
+      - rabbitmq

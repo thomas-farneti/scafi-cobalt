@@ -20,7 +20,7 @@ trait RedisSensorManagerRepoComponent extends SensorManagerRepositoryComponent{
     override def getSensorValue(deviceId: String, sensorName: String): Future[Option[String]] = redisClient.hmget[String](keyGen(deviceId),sensorName).map(_.head)
 
     override def getSensorsValues(deviceId: String): Future[Option[Map[String, String]]] = redisClient.hgetall[String](keyGen(deviceId)).map{
-      case  a if a.isEmpty => None
+      case a if a.isEmpty => None
       case a => Some(a)
     }
   }

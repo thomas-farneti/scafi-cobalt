@@ -5,17 +5,29 @@ package it.unibo.scafi.cobalt.sensorManager
   */
 import com.typesafe.config.ConfigFactory
 
-trait Config {
-  protected val config = ConfigFactory.load()
-  protected val interface = config.getString("http.interface")
-  protected val port = config.getInt("http.port")
+import com.typesafe.config.{Config, ConfigFactory}
+
+trait Configuration {
+  protected val config : Config
+}
+
+trait DockerConfig extends Configuration{
+  override protected val config: Config = ConfigFactory.load()
+}
+
+trait TestConfig extends Configuration{
+  override protected val config: Config = ConfigFactory.load("test.conf")
+}
+
+trait AkkaHttpConfig extends Configuration{
+  protected val interface: String = config.getString("http.interface")
+  protected val port: Int = config.getInt("http.port")
+}
+
+trait RedisConfiguration extends Configuration {
+  //  override protected val config: Config = ConfigFactory.load()
   protected val redisHost = config.getString("redis.host")
   protected val redisPort = config.getInt("redis.port")
   protected val redisPassword = config.getString("redis.password")
   protected val redisDb = config.getInt("redis.db")
-
-//  protected val identityManagerHost = config.getString("services.identity-manager.host")
-//  protected val identityManagerPort = config.getInt("services.identity-manager.port")
-//  protected val tokenManagerHost = config.getString("services.token-manager.host")
-//  protected val tokenManagerPort = config.getInt("services.token-manager.port")
 }

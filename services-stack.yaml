@@ -2,8 +2,16 @@ version: "3"
 
 services:
 
-  networkService:
-    image: networkservice:0.1.0
+  ingestionService:
+    image: ingestionservice:0.1.0
+    ports:
+      - "127.0.0.1:80:8080"
+    networks:
+      - sensornet
+      - network
+
+  domainService:
+    image: domainservice:0.1.0
     ports:
       - "127.0.0.1:8081:8080"
     depends_on:
@@ -11,16 +19,18 @@ services:
     networks:
       network:
         aliases:
-          - network
-      networknet:
+          - domain
+      domainnet:
 
-  computingService:
-    image: computingservice:0.1.0
+  executionService:
+    image: executionservice:0.1.0
     ports:
       - "127.0.0.1:8083:8080"
+    depends_on:
+          - ingestionService
     networks:
       - network
-      - computingnet
+      - executionnet
 
   sensorService:
     image: sensorservice:0.1.0
@@ -32,16 +42,8 @@ services:
         aliases:
           - sensor
 
-  ingestionService:
-    image: ingestionservice:0.1.0
-    ports:
-      - "127.0.0.1:80:8080"
-    networks:
-      - sensornet
-      - network
-
 networks:
   network:
-  networknet:
+  domainnet:
   sensornet:
-  computingnet:
+  executionnet:

@@ -28,7 +28,6 @@ class AkkaHttpSensorManagerRoutingComponent(implicit val executor: ExecutionCont
   }
 }
 
-
 object AkkaHttpSensorManagerRoutingComponent{
   type dependencies = SensorManagerServiceComponent
 }

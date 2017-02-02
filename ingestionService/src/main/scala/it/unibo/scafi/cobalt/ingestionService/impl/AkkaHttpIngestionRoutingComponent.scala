@@ -17,6 +17,7 @@ import it.unibo.scafi.cobalt.core.messages.SensorData
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 import spray.json._
 import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.ingestionService.TestConfig
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
@@ -24,14 +25,13 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
   * Created by tfarneti.
   */
 
-class AkkaHttpIngestionRoutingComponent(implicit val executor: ExecutionContextExecutor,implicit val system :ActorSystem,implicit val mat : ActorMaterializer) extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport{ self: AkkaHttpIngestionRoutingComponent.dependencies =>
+class AkkaHttpIngestionRoutingComponent(connection : Connection)(implicit val executor: ExecutionContextExecutor,implicit val system :ActorSystem,implicit val mat : ActorMaterializer) extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport{ self: AkkaHttpIngestionRoutingComponent.dependencies =>
 
   implicit val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport.json()
 
   val persitData: Sink[SensorData, Future[Done]] = Sink.foreach[SensorData](d => service.updateSensorValue(d.deviceId,d.sensorName,d.sensorValue))
   val rabbitMapping: Flow[SensorData, Routed, NotUsed] = Flow[SensorData].map(data => Routed( s"${data.deviceId}.${data.sensorName}", Message(body = ByteString(data.toJson.compactPrint))))
 
-  val connection = Connection()
   connection.exchangeDeclare(Exchange("sensor_events", Topic, durable = true))
 
 

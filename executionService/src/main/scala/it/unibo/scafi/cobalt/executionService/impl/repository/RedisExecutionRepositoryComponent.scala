@@ -2,7 +2,6 @@ package it.unibo.scafi.cobalt.executionService.impl.repository
 
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionRepositoryComponent}
-import it.unibo.scafi.cobalt.executionService.impl.{ActorSystemProvider, RedisConfiguration}
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future
@@ -12,22 +11,22 @@ import scala.concurrent.Future
   */
 
 
-trait RedisExecutionRepositoryComponent extends ExecutionRepositoryComponent { self: CobaltBasicIncarnation with RedisConfiguration with ActorSystemProvider =>
-  override def repository = new RedisRepository
+trait RedisExecutionRepositoryComponent extends ExecutionRepositoryComponent { self: CobaltBasicIncarnation =>
+  val redisClient: RedisClient
+  override def repository = new RedisRepository(redisClient)
 
-  implicit val stateSerializer = new ByteStringFormatter[StateImpl] {
-    override def serialize(data: StateImpl): ByteString = {
-      ByteString(data.id +"|"+ data.export)
+  class RedisRepository(redisClient: RedisClient) extends Repository{
+
+    implicit val stateSerializer = new ByteStringFormatter[StateImpl] {
+      override def serialize(data: StateImpl): ByteString = {
+        ByteString(data.id +"|"+ data.export)
+      }
+
+      override def deserialize(bs: ByteString): StateImpl = {
+        val r = bs.utf8String.split('|').toList
+        StateImpl(r(0), r(1))
+      }
     }
-
-    override def deserialize(bs: ByteString): StateImpl = {
-      val r = bs.utf8String.split('|').toList
-      StateImpl(r(0), r(1))
-    }
-  }
-
-  class RedisRepository() extends Repository{
-    val redisClient: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
 
     override def get(id: String): Future[Option[StateImpl]] = redisClient.get[StateImpl](id)
 

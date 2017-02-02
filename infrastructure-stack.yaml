@@ -2,21 +2,21 @@ version: "3"
 
 services:
 
-  networkDb:
+  domainDb:
     image: redis
     ports:
       - "6379"
     networks:
-      networknet:
+      domainnet:
         aliases:
           - redis
 
-  computingDb:
+  executionDb:
     image: redis
     ports:
       - "6379"
     networks:
-      computingnet:
+      executionnet:
         aliases:
           - redis
 
@@ -39,6 +39,6 @@ services:
 
 networks:
   network:
-  networknet:
+  domainnet:
   sensornet:
-  computingnet:
+  executionnet:

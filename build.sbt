@@ -27,13 +27,6 @@ val rediscala   = "com.github.etaty" %% "rediscala" % rediscalaV
 
 val scafi_core  = "it.unibo.apice.scafiteam" % "scafi-core_2.11"  % "0.1.0"
 
-lazy val kafkaDependencies = Seq(
-  "org.apache.kafka"                %% "kafka"                      % kafkaVersion,
-  "org.apache.kafka"                % "kafka-clients"                % kafkaVersion
-)
-
-
-
 // Cross-Building
 crossScalaVersions := Seq("2.11.8")
 
@@ -47,7 +40,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(core,networkMicroService,computingMicroService,sensorManagerMicroService,ingestionMicroService)
+  .aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -57,34 +50,34 @@ lazy val core = project.
     libraryDependencies ++= Seq(scafi_core,sprayJson)
   )
 
-lazy val networkMicroService = project.
+lazy val domainService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-networkService",
+    name := "cobalt-domainService",
     version := "0.1.0",
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
     .settings(
-      packageName in Docker := "networkservice"
+      packageName in Docker := "domainservice"
     )
 
 
-lazy val computingMicroService = project.
+lazy val executionService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-ComputingService",
+    name := "cobalt-ExecutionService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
+    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
   .settings(
-    packageName in Docker := "computingservice"
+    packageName in Docker := "executionservice"
   )
 
-lazy val ingestionMicroService = project.
+lazy val ingestionService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(

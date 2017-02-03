@@ -13,6 +13,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
 import akka.util.ByteString
 import io.scalac.amqp._
+import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.core.messages.SensorData
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 import spray.json._
@@ -20,12 +21,13 @@ import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.ingestionService.TestConfig
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
 /**
   * Created by tfarneti.
   */
 
-class AkkaHttpIngestionRoutingComponent(connection : Connection)(implicit val executor: ExecutionContextExecutor,implicit val system :ActorSystem,implicit val mat : ActorMaterializer) extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport{ self: AkkaHttpIngestionRoutingComponent.dependencies =>
+class AkkaHttpIngestionRoutingComponent(connection : Connection) { self: AkkaHttpIngestionRoutingComponent.dependencies =>
 
   implicit val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport.json()
 
@@ -67,5 +69,5 @@ class AkkaHttpIngestionRoutingComponent(connection : Connection)(implicit val ex
 
 
 object AkkaHttpIngestionRoutingComponent{
-  type dependencies = IngestionServiceComponent
+  type dependencies = IngestionServiceComponent with ActorSystemProvider with ExecutionContextProvider with ActorMaterializerProvider
 }

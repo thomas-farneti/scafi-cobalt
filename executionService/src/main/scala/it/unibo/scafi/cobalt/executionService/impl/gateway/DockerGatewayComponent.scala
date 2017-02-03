@@ -7,8 +7,9 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes.Success
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.executionService.core.ExecutionGatewayComponent
-import it.unibo.scafi.cobalt.executionService.impl.{ActorSystemProvider, ServicesConfiguration}
+import it.unibo.scafi.cobalt.executionService.impl.ServicesConfiguration
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.Future
@@ -16,7 +17,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesConfiguration with ActorSystemProvider =>
+trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesConfiguration with ActorSystemProvider with ActorMaterializerProvider with ExecutionContextProvider =>
   override def gateway = new DockerGateway()
 
   class DockerGateway extends Gateway{

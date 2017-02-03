@@ -10,8 +10,9 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
 import consul.Consul
+import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionGatewayComponent}
-import it.unibo.scafi.cobalt.executionService.impl.{ActorSystemProvider, ConsulConfiguration}
+import it.unibo.scafi.cobalt.executionService.impl.ConsulConfiguration
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.Future
@@ -19,7 +20,12 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ConsulAkkaGatewayCompSystem extends ExecutionGatewayComponent with ActorSystemProvider{ self : CobaltBasicIncarnation with ConsulConfiguration =>
+trait ConsulAkkaGatewayCompSystem extends ExecutionGatewayComponent { self : CobaltBasicIncarnation
+  with ConsulConfiguration
+  with ExecutionContextProvider
+  with ActorSystemProvider
+  with ActorMaterializerProvider =>
+
   override def gateway = new ConsulAkkaHttpGateway()
 
   class ConsulAkkaHttpGateway extends Gateway{

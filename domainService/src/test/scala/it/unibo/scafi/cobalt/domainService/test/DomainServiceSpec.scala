@@ -16,7 +16,7 @@ class DomainServiceSpec extends WordSpec with Matchers with ScalatestRouteTest w
 
   "The Domain service" should {
     val routing = new HttpDomainComponent with DomainServiceComponent with DomainRepositoryMockComponent with ExecutionContextProvider {
-      override implicit val executionContex: ExecutionContext = executor
+      override implicit val impExecutionContext: ExecutionContext = executor
     }
 
     "Return a list of devices" in {

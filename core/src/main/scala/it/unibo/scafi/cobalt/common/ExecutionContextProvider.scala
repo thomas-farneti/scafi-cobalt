@@ -6,5 +6,5 @@ import scala.concurrent.ExecutionContext
   * Created by tfarneti.
   */
 trait ExecutionContextProvider {
-  implicit val executionContex : ExecutionContext
+  implicit def impExecutionContext : ExecutionContext
 }

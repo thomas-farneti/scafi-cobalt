@@ -1,5 +1,6 @@
 package it.unibo.scafi.cobalt.executionService.impl
 
+import it.unibo.scafi.cobalt.common.{ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
 
 import scala.concurrent.Future
@@ -7,7 +8,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : ExecutionRepositoryComponent with ExecutionGatewayComponent with CobaltBasicIncarnation with ActorSystemProvider =>
+trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : CobaltExecutionServiceComponent.dependencies =>
   override def service = new CobaltService
 
   class CobaltService() extends ComputingService {
@@ -24,5 +25,8 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
       state.map(Right(_))
     }
   }
+}
 
+object CobaltExecutionServiceComponent {
+  type dependencies = ExecutionRepositoryComponent with ExecutionGatewayComponent with CobaltBasicIncarnation with ExecutionContextProvider
 }

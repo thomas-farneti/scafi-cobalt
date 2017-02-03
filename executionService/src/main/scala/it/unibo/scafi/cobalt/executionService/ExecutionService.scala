@@ -6,6 +6,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import io.scalac.amqp.{Connection, Queue}
+import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.core.messages.SensorData
 import it.unibo.scafi.cobalt.executionService.core.CobaltBasicIncarnation
@@ -14,6 +15,8 @@ import it.unibo.scafi.cobalt.executionService.impl.gateway.DockerGatewayComponen
 import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepositoryComponent
 import redis.RedisClient
 import spray.json._
+
+import scala.concurrent.ExecutionContext
 
 
 trait Environment extends AkkaHttpExecutionComponent
@@ -24,20 +27,22 @@ trait Environment extends AkkaHttpExecutionComponent
   with DockerConfig
   with ServicesConfiguration
   with ActorSystemProvider
+  with ActorMaterializerProvider
+  with ExecutionContextProvider
 
 
 object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
-  implicit val executionContext = system.dispatcher
+  implicit def executionContext = system.dispatcher
   val redis: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
 
   val env = new Environment {
-    override implicit val impSystem = system
-    override implicit val impExecutor = executionContext
-    override implicit val impMat = materializer
 
     override val redisClient: RedisClient = redis
+    override implicit val impmaterializer: ActorMaterializer = materializer
+    override implicit def impExecutionContext: ExecutionContext = executionContext
+    override implicit val impSystem: ActorSystem = system
   }
 
   Http().bindAndHandle(env.executionRoutes, interface, port)

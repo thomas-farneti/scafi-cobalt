@@ -3,9 +3,10 @@ package it.unibo.scafi.cobalt.executionService.impl.scafi
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
 import akka.util.ByteString
+import it.unibo.scafi.cobalt.common.ActorSystemProvider
 import it.unibo.scafi.cobalt.core.incarnation.ScafiCobaltIncarnation
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionRepositoryComponent}
-import it.unibo.scafi.cobalt.executionService.impl.{ActorSystemProvider, RedisConfiguration}
+import it.unibo.scafi.cobalt.executionService.impl.RedisConfiguration
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future

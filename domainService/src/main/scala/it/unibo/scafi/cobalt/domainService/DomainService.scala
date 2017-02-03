@@ -28,7 +28,7 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
 
   val router = new HttpDomainComponent with DomainServiceComponent with RedisDomainRepositoryComponent with ExecutionContextProvider{
     override val redisClient: RedisClient = redis
-    override implicit val executionContex: ExecutionContext = dispatcher
+    override implicit val impExecutionContext: ExecutionContext = dispatcher
   }
 
   Http().bindAndHandle(router.routes, interface , port)

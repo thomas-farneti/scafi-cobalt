@@ -1,7 +1,5 @@
 package it.unibo.scafi.cobalt.sensorManager.core
 
-import it.unibo.scafi.cobalt.core.messages.ingestionService.{UpdateSensorValueCmd, UpdateSensorsValues}
-
 import scala.concurrent.Future
 
 /**

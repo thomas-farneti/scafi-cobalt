@@ -4,7 +4,6 @@ import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import it.unibo.scafi.cobalt.core.messages.ingestionService.UpdateSensorValueCmd
 import it.unibo.scafi.cobalt.sensorManager.core.SensorManagerServiceComponent
 
 import scala.concurrent.ExecutionContextExecutor

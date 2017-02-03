@@ -1,15 +1,15 @@
 package it.unibo.scafi.cobalt.domainService.impl
 
-import it.unibo.scafi.cobalt.domainService.core.NetworkServiceRepositoryComponent
+import it.unibo.scafi.cobalt.common.ExecutionContextProvider
+import it.unibo.scafi.cobalt.domainService.core.DomainRepositoryComponent
 import redis.RedisClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
   * Created by tfarneti.
   */
-trait RedisDomainRepositoryComponent extends NetworkServiceRepositoryComponent{
+trait RedisDomainRepositoryComponent extends DomainRepositoryComponent{ self : ExecutionContextProvider =>
   val redisClient : RedisClient
 
   override def repository = new RedisRepository(redisClient)

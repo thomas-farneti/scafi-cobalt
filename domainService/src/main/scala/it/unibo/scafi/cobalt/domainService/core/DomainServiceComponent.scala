@@ -5,7 +5,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait DomainServiceComponent { self:NetworkServiceRepositoryComponent =>
+trait DomainServiceComponent { self:DomainRepositoryComponent =>
   def service: Service = new Service
 
   class Service{

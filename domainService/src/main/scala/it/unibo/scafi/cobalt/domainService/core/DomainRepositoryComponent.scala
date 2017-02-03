@@ -5,7 +5,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait NetworkServiceRepositoryComponent {
+trait DomainRepositoryComponent {
   def repository : Repository
 
   trait Repository{
@@ -21,7 +21,7 @@ trait NetworkServiceRepositoryComponent {
   }
 }
 
-trait NetworkServiceRepositoryMockComponent extends NetworkServiceRepositoryComponent{
+trait DomainRepositoryMockComponent extends DomainRepositoryComponent{
   def repository = new MockRepository()
 
   class MockRepository extends Repository{

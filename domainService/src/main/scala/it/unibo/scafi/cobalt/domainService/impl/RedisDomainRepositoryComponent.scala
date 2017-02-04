@@ -23,7 +23,11 @@ trait RedisDomainRepositoryComponent extends DomainRepositoryComponent{ self : E
 
     override def removeNeighborForDevice(deviceId: String, nbrId: String): Future[String] = ???
 
-    override def getNbrsSpatial(deviceId: String): Future[Set[String]] = redisClient.geoRadiusByMember("netSvc:spatial",deviceId,100).map(_.toSet)
+    override def getNbrsSpatial(deviceId: String): Future[Set[String]] = {
+      redisClient.geoRadiusByMember("netSvc:spatial",deviceId,100).map(_.toSet).recover{
+        case _ => Set()
+      }
+    }
 
     override def updatePosition(deviceId: String, latitude: String, longitude: String): Future[Boolean] = redisClient.geoAdd("netSvc:spatial",latitude.toDouble,longitude.toDouble,deviceId).map(_ => true)
   }

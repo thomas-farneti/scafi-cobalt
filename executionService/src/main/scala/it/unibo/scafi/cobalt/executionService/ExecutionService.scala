@@ -3,9 +3,9 @@ package it.unibo.scafi.cobalt.executionService
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.util.ByteString
-import io.scalac.amqp.{Connection, Queue}
+import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.core.messages.SensorData
@@ -16,7 +16,7 @@ import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepo
 import redis.RedisClient
 import spray.json._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 
 trait Environment extends AkkaHttpExecutionComponent
@@ -51,10 +51,18 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
   connection.queueDeclare(Queue("sensor_events.executionService.queue",durable = true)).onComplete(_=>
   connection.queueBind("sensor_events.executionService.queue","sensor_events","*.gps"))
 
+  connection.exchangeDeclare(Exchange("field_events", Topic, durable = true))
+  connection.queueDeclare(Queue("field_events.test.queue",durable = true)).onComplete(_=>
+    connection.queueBind("field_events.test.queue","field_events","*"))
+
   Source.fromPublisher(connection.consume(queue = "sensor_events.executionService.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-    .runForeach(data => {
-      val state = env.service.computeNewState(data.deviceId).map(s => println(s.id+" -> "+s.export))
+//    .runForeach(data => {
+//      val state = env.service.computeNewState(data.deviceId).map(s => println(s.id+" -> "+s.export))
+//    })
+    .mapAsync(1)(data => {
+      env.service.computeNewState(data.deviceId)
     })
+    .map(s => Routed( s"${s.id}", Message(body = ByteString(s.export))))
+    .runWith(Sink.fromSubscriber(connection.publish(exchange = "field_events")))
 }
-

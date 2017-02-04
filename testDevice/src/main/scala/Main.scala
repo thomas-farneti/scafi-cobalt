@@ -23,7 +23,7 @@ object Main extends App{
 
   private val log = Logging(system, getClass.getName)
 
-  1001 to 2000 foreach{ i =>
+  1 to 500 foreach{ i =>
 
     Marshal(SensorData(i.toString, i.toString, "gps", "44.13965026409682:12.246460430324078")).to[RequestEntity].flatMap{ e =>
       Http().singleRequest(HttpRequest(method=HttpMethods.POST, uri = Uri("http://localhost:80/sensorData"), entity= e))
@@ -34,6 +34,6 @@ object Main extends App{
       }
     }
 
-    Thread.sleep(15)
+    Thread.sleep(100)
   }
 }

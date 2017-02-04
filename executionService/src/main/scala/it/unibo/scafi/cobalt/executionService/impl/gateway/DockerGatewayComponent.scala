@@ -24,7 +24,7 @@ trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesCo
   class DockerGateway extends Gateway{
     implicit val materilizer = ActorMaterializer()
 
-    override def GetAllNbrsIds(id: String): Future[Set[String]] = {
+    override def getAllNbrsIds(id: String): Future[Set[String]] = {
       Http().singleRequest(HttpRequest(uri = s"http://$domainHost:$domainPort/nbrs/spatial/$id")).flatMap { response =>
         response.status match {
           case Success(_) => Unmarshal(response.entity).to[Set[String]]
@@ -33,12 +33,12 @@ trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesCo
       }
     }
 
-    override def GetSensors(id: String): Future[Map[String, String]] = {
+    override def senseAll(id: String): Future[Map[String, String]] = {
       Future.successful(Map())
     }
 
-    def sense(id: String, lsname:String): Future[String] = {
-      Http().singleRequest(HttpRequest(uri= s"http://$sensorHost:$sensorPort/device/$id/sensor/$lsname")).flatMap { response =>
+    override def sense(id: String, sensorName: String): Future[String] = {
+      Http().singleRequest(HttpRequest(uri= s"http://$sensorHost:$sensorPort/device/$id/sensor/$sensorName")).flatMap { response =>
         response.status match {
           case Success(_) => Unmarshal(response.entity).to[String]
           case _ => Future.failed(new IOException("Epic Fail"))

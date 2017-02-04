@@ -14,8 +14,21 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
   class CobaltService() extends ComputingService {
     override def computeNewState(deviceId: String): Future[StateImpl] = {
 
-      gateway.GetAllNbrsIds(deviceId).map(s => StateImpl(deviceId,s.size+""))
+      val myStateF = repository.get(deviceId)
+      val mySensorF = gateway.sense(deviceId,"gps")
 
+      for{
+        nbrs <- gateway.getAllNbrsIds(deviceId)
+        nbrsExports <- repository.mGet(nbrs)
+        myState <- myStateF
+        mySensor <- mySensorF
+
+      }yield compute(deviceId,myState,mySensor,nbrsExports)
+
+    }
+
+    private def compute(id:String,myState: Option[STATE],mySensor: EXPORT, nbrsExports: Seq[Option[STATE]]): STATE ={
+      StateImpl(id,nbrsExports.size.toString)
     }
   }
 }

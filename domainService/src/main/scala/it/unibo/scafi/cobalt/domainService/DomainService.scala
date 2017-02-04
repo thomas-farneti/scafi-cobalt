@@ -1,7 +1,9 @@
 package it.unibo.scafi.cobalt.domainService
 
 import akka.actor.ActorSystem
+import akka.event.Logging.InfoLevel
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives.logRequestResult
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
@@ -26,12 +28,14 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
 
   val redis: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
 
-  val router = new HttpDomainComponent with DomainServiceComponent with RedisDomainRepositoryComponent with ExecutionContextProvider{
+  val env = new HttpDomainComponent with DomainServiceComponent with RedisDomainRepositoryComponent with ExecutionContextProvider{
     override val redisClient: RedisClient = redis
     override implicit val impExecutionContext: ExecutionContext = dispatcher
   }
 
-  Http().bindAndHandle(router.routes, interface , port)
+  val routes = logRequestResult("domainService", InfoLevel)(env.routes)
+
+  Http().bindAndHandle(routes, interface , port)
 
   val connection = Connection(config)
   connection.queueDeclare(Queue("sensor_events.domainMicroservice.queue",durable = true)).onComplete(_=>
@@ -40,5 +44,6 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
   Source.fromPublisher(connection.consume(queue = "sensor_events.domainMicroservice.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
     .map(m => m.deviceId -> m.sensorValue.split(":"))
-    .runForeach(m => router.service.updatePosition(m._1,m._2(0),m._2(1)))
+    .alsoTo(Sink.foreach(m => println(m._1)))
+    .runForeach(m => env.service.updatePosition(m._1,m._2(0),m._2(1)))
 }

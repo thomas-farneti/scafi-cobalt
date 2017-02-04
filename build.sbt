@@ -40,7 +40,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scafi-cobalt"
   )
-  .aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService)
+  .aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
 
 lazy val core = project.
   settings(commonSettings: _*).
@@ -75,6 +75,19 @@ lazy val executionService = project.
   .enablePlugins(DockerPlugin,JavaAppPackaging)
   .settings(
     packageName in Docker := "executionservice"
+  )
+
+lazy val fieldVisualizerService = project.
+  dependsOn(core).
+  settings(commonSettings: _*).
+  settings(
+    name := "cobalt-FieldVisualizer",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,rctRabbitMq)
+  )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+  .settings(
+    packageName in Docker := "visulizerservice"
   )
 
 lazy val ingestionService = project.

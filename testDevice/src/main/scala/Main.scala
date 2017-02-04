@@ -14,6 +14,7 @@ import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.core.messages.SensorData
 
 import scala.concurrent.Future
+import scala.util.Random
 
 
 object Main extends App{
@@ -23,9 +24,14 @@ object Main extends App{
 
   private val log = Logging(system, getClass.getName)
 
-  1 to 500 foreach{ i =>
+  val r = new scala.util.Random
 
-    Marshal(SensorData(i.toString, i.toString, "gps", "44.13965026409682:12.246460430324078")).to[RequestEntity].flatMap{ e =>
+  101 to 200 foreach{ i =>
+
+    val lat = "44."+ (10328 + r.nextInt(( 147697 - 10328) + 1))
+    val lon = "12."+(159167 + r.nextInt(( 281476 - 159167) + 1))
+
+    Marshal(SensorData(i.toString, i.toString, "gps", s"$lat:$lon")).to[RequestEntity].flatMap{ e =>
       Http().singleRequest(HttpRequest(method=HttpMethods.POST, uri = Uri("http://localhost:80/sensorData"), entity= e))
     }.map { x =>
       x.status match {
@@ -33,7 +39,7 @@ object Main extends App{
         case status:StatusCode if status.isFailure() => { log.info("Failed") }
       }
     }
-
-    Thread.sleep(100)
+    //LatLon(44.147697,12.159167),LatLon(44.10328,12.281476)
+    Thread.sleep(250)
   }
 }

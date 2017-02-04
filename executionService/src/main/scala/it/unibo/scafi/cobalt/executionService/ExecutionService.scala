@@ -16,7 +16,7 @@ import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepo
 import redis.RedisClient
 import spray.json._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
 trait Environment extends AkkaHttpExecutionComponent
@@ -53,10 +53,8 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
 
   Source.fromPublisher(connection.consume(queue = "sensor_events.executionService.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-    .mapAsync(4){ m=>
-      println(s" Computing ${m.deviceId}")
-      env.service.computeNewState(m.deviceId)
-    }
-    .runWith(Sink.ignore)
+    .runForeach(data => {
+      val state = env.service.computeNewState(data.deviceId).map(s => println(s.id+" -> "+s.export))
+    })
 }
 

@@ -21,16 +21,20 @@ services:
         aliases:
           - domain
       domainnet:
+    deploy:
+      replicas: 3
 
   executionService:
     image: executionservice:0.1.0
     ports:
       - "127.0.0.1:8083:8080"
     depends_on:
-          - ingestionService
+      - ingestionService
     networks:
       - network
       - executionnet
+    deploy:
+      replicas: 10
 
   sensorService:
     image: sensorservice:0.1.0

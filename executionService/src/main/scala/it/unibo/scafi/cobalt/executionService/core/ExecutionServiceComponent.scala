@@ -9,6 +9,6 @@ trait ExecutionServiceComponent { self: ExecutionServiceCore =>
   def service: ComputingService
 
   trait ComputingService{
-    def computeNewState(deviceId:ID):Future[Either[String,STATE]]
+    def computeNewState(deviceId:ID):Future[STATE]
   }
 }

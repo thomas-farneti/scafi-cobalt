@@ -18,9 +18,8 @@ trait AkkaHttpExecutionComponent { self: AkkaHttpExecutionComponent.dependencies
         extractRequestEntity{ entity =>
           entity.discardBytes()
           complete {
-            service.computeNewState(deviceId).map[ToResponseMarshallable] {
-              case Right(s) => deviceId+" -> "+ s.export
-              case Left(m) => InternalServerError -> m
+            service.computeNewState(deviceId).map[ToResponseMarshallable] { s =>
+              s.id+" -> "+s.export
             }
           }
         }

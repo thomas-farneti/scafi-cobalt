@@ -59,7 +59,7 @@ class AkkaHttpIngestionRoutingComponent(connection : Connection) { self: AkkaHtt
             .runWith(Sink.fromSubscriber(connection.publish(exchange = "sensor_events")))
 
           complete{
-            Created
+            OK
           }
         }
       }

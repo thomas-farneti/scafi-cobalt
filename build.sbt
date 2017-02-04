@@ -90,6 +90,19 @@ lazy val ingestionService = project.
     packageName in Docker := "ingestionservice"
   )
 
+lazy val testDevice = project.
+  dependsOn(core).
+  settings(commonSettings: _*).
+  settings(
+    name := "cobalt-testDevice",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,sprayJson)
+  )
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
+  .settings(
+    packageName in Docker := "testdevice"
+  )
+
 lazy val sensorManagerMicroService = project.
   dependsOn(core).
   settings(commonSettings: _*).

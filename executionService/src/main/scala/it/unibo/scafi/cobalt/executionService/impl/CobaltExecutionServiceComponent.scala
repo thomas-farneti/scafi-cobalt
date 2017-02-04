@@ -1,6 +1,6 @@
 package it.unibo.scafi.cobalt.executionService.impl
 
-import it.unibo.scafi.cobalt.common.{ActorSystemProvider, ExecutionContextProvider}
+import it.unibo.scafi.cobalt.common.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
 
 import scala.concurrent.Future
@@ -12,17 +12,10 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
   override def service = new CobaltService
 
   class CobaltService() extends ComputingService {
-    override def computeNewState(deviceId: String): Future[Either[String, StateImpl]] = {
+    override def computeNewState(deviceId: String): Future[StateImpl] = {
 
-      val state = for{
-        //sensors <- gateway.GetSensors(deviceId)
-        nbrs <- gateway.GetAllNbrsIds(deviceId)
-        nbrsExports <- repository.mGet(nbrs)
-        s = new STATE(deviceId, nbrsExports.length.toString)
-        res <- repository.set(deviceId, s)
-      }yield s
+      gateway.GetAllNbrsIds(deviceId).map(s => StateImpl(deviceId,s.size+""))
 
-      state.map(Right(_))
     }
   }
 }

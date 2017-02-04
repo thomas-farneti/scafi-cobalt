@@ -7,6 +7,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes.Success
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.ActorMaterializer
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.executionService.core.ExecutionGatewayComponent
 import it.unibo.scafi.cobalt.executionService.impl.ServicesConfiguration
@@ -17,10 +18,11 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesConfiguration with ActorSystemProvider with ActorMaterializerProvider with ExecutionContextProvider =>
+trait DockerGatewayComponent extends ExecutionGatewayComponent{ self: ServicesConfiguration with ActorSystemProvider with ExecutionContextProvider =>
   override def gateway = new DockerGateway()
 
   class DockerGateway extends Gateway{
+    implicit val materilizer = ActorMaterializer()
 
     override def GetAllNbrsIds(id: String): Future[Set[String]] = {
       Http().singleRequest(HttpRequest(uri = s"http://$domainHost:$domainPort/nbrs/spatial/$id")).flatMap { response =>

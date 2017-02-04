@@ -39,10 +39,6 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
 
   Source.fromPublisher(connection.consume(queue = "sensor_events.domainMicroservice.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-    .mapAsync(4){ m=>
-      val split = m.sensorValue.split(":")
-      println(s"${m.deviceId} ${split(0)} ${split(1)}")
-      router.service.updatePosition(m.deviceId,split(0),split(1))
-    }
-    .runWith(Sink.ignore)
+    .map(m => m.deviceId -> m.sensorValue.split(":"))
+    .runForeach(m => router.service.updatePosition(m._1,m._2(0),m._2(1)))
 }

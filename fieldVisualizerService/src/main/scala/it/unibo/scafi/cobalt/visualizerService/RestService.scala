@@ -19,14 +19,12 @@ package it.unibo.scafi.cobalt.visualizerService
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.http.scaladsl.server.{Route, StandardRoute}
-import akka.pattern.ask
-import akka.stream.scaladsl.{Flow, Source}
+import akka.http.scaladsl.server.Route
+import akka.stream.scaladsl.Flow
 import akka.util.Timeout
-import com.fasterxml.jackson.databind.SerializationFeature
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
 
 trait RestService extends CorsSupport {
 

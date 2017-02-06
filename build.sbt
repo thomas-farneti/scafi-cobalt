@@ -30,7 +30,6 @@ val testKit     = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV % "test
 val sprayJson   = "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV
 
 val reactiveRabbit = "io.scalac" %% "reactive-rabbit" % "1.1.4"
-val scalaConsul = "com.codacy" %% "scala-consul" % "2.0.2"
 val scalaTest   = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 val rediscala   = "com.github.etaty" %% "rediscala" % rediscalaV
 val scafi_core  = "it.unibo.apice.scafiteam" % "scafi-core_2.11"  % "0.1.0"
@@ -79,7 +78,7 @@ lazy val executionService = project.
   settings(
     name := "cobalt-ExecutionService",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
   .settings(
@@ -92,7 +91,7 @@ lazy val fieldVisualizerService = project.
   settings(
     name := "cobalt-FieldVisualizer",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scalaConsul,scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
   .settings(

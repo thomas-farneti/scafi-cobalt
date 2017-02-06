@@ -4,3 +4,8 @@ jdk:
 scala:
   - 2.11.8
   - 2.12.1
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push USER/REPO;
+    fi

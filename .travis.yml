@@ -12,7 +12,7 @@ scala:
   - 2.12.1
 
 script:
-  -sbt docker:publishLocal
+  - sbt docker:publishLocal
   
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then

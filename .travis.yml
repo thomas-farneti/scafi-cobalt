@@ -13,9 +13,9 @@ scala:
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push scaficobalt/executionservice;
-    docker push scaficobalt/ingestionservice;
-    docker push scaficobalt/domainservice;
-    docker push scaficobalt/sensorservice;
-    docker push scaficobalt/visualizerservice;
+    docker push scaficobalt/executionservice:latest;
+    docker push scaficobalt/ingestionservice:latest;
+    docker push scaficobalt/domainservice:latest;
+    docker push scaficobalt/sensorservice:latest;
+    docker push scaficobalt/visualizerservice:latest;
     fi

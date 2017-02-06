@@ -10,16 +10,14 @@ jdk:
 scala:
   - 2.11.8
   - 2.12.1
-
-script:
-  - sbt docker:publishLocal
   
 after_success:
+  - sbt docker:publishLocal
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push executionservice;
-    docker push ingestionservice;
-    docker push domainservice;
-    docker push sensorservice;
-    docker push visualizerservice;
+    docker push scaficobalt/executionservice;
+    docker push scaficobalt/ingestionservice;
+    docker push scaficobalt/domainservice;
+    docker push scaficobalt/sensorservice;
+    docker push scaficobalt/visualizerservice;
     fi

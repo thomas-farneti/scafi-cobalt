@@ -26,7 +26,7 @@ object Main extends App{
 
   val r = new scala.util.Random
 
-  101 to 200 foreach{ i =>
+  1 to 500 foreach{ i =>
 
     val lat = "44."+ (10328 + r.nextInt(( 147697 - 10328) + 1))
     val lon = "12."+(159167 + r.nextInt(( 281476 - 159167) + 1))

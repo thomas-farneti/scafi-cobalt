@@ -9,6 +9,8 @@ services:
     networks:
       - sensornet
       - network
+    deploy:
+      replicas: 2
 
   domainService:
     image: domainservice:0.1.0

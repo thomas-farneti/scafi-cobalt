@@ -6,7 +6,7 @@ import akka.stream.ActorMaterializer
 import io.scalac.amqp.Connection
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
-import it.unibo.scafi.cobalt.ingestionService.impl.{AkkaHttpIngestionRoutingComponent, RedisIngestionServiceRepoComponent}
+import it.unibo.scafi.cobalt.ingestionService.impl.{IngestionApiComponent, RedisIngestionServiceRepoComponent}
 import redis.RedisClient
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
@@ -21,7 +21,7 @@ object IngestionMicroService extends App with DockerConfig with RedisConfigurati
 
   val redis : RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
 
-  val router = new AkkaHttpIngestionRoutingComponent(Connection(config)) with IngestionServiceComponent with RedisIngestionServiceRepoComponent with ActorSystemProvider with ExecutionContextProvider with ActorMaterializerProvider{
+  val router = new IngestionApiComponent(Connection(config)) with IngestionServiceComponent with RedisIngestionServiceRepoComponent with ActorSystemProvider with ExecutionContextProvider with ActorMaterializerProvider{
     override implicit val impSystem: ActorSystem = actorSystem
     override implicit def impExecutionContext: ExecutionContext = dispatcher
     override implicit val impmaterializer: ActorMaterializer = materializer

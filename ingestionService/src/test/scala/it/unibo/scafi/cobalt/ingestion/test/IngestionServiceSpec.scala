@@ -3,10 +3,7 @@ package it.unibo.scafi.cobalt.ingestion.test
 /**
   * Created by tfarneti.
   */
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import it.unibo.scafi.cobalt.ingestionService.core.{IngestionServiceComponent, IngestionServiceMockRepoComponent}
-import it.unibo.scafi.cobalt.ingestionService.impl.AkkaHttpIngestionRoutingComponent
 import org.scalatest.{Matchers, WordSpec}
 
 /**

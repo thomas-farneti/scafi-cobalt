@@ -17,9 +17,9 @@ script:
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push executionservice:latest;
-    docker push ingestionservice:latest;
-    docker push domainservice:latest;
-    docker push sensorservice:latest;
-    docker push visualizerservice:latest;
+    docker push executionservice;
+    docker push ingestionservice;
+    docker push domainservice;
+    docker push sensorservice;
+    docker push visualizerservice;
     fi

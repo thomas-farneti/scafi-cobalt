@@ -2,6 +2,7 @@ import sbt.Keys.version
 
 scalacOptions := Seq(
   "-unchecked",
+  "-feature",
   "-deprecation",
   "-encoding", "utf8",
   "-Xlint:missing-interpolator",
@@ -40,20 +41,23 @@ crossScalaVersions := Seq("2.11.8")
 // Common settings across projects
 lazy val commonSettings = Seq(
   organization := "it.unibo.apice.scafiteam",
-  scalaVersion := scalaV
+  scalaVersion := scalaV,
+  dockerUpdateLatest := true,
+  dockerRepository := Some("scaficobalt")
 )
 
-lazy val root = (project in file("."))
-  .settings(
+lazy val root = (project in file(".")).
+  settings(commonSettings: _*).
+  settings(
     name := "scafi-cobalt",
     version := "0.1.0"
-  )
-  .aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
+  ).
+  aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
 
 lazy val core = project.
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-core",
+    name := "core",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,sprayJson)
   )
@@ -62,77 +66,60 @@ lazy val domainService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-domainService",
+    name := "domainservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
-    .settings(
-      packageName in Docker := "domainservice"
-    )
+
 
 
 lazy val executionService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-ExecutionService",
+    name := "executionservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
-  .settings(
-    packageName in Docker := "executionservice"
-  )
 
 lazy val fieldVisualizerService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-FieldVisualizer",
+    name := "visualizerservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
-  .settings(
-    packageName in Docker := "visulizerservice"
-  )
+
 
 lazy val ingestionService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-IngestionService",
+    name := "ingestionservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
-  .settings(
-    packageName in Docker := "ingestionservice"
-  )
 
 lazy val testDevice = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-testDevice",
+    name := "testdevice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,sprayJson)
-  )
-  .enablePlugins(DockerPlugin,JavaAppPackaging)
-  .settings(
-    packageName in Docker := "testdevice"
   )
 
 lazy val sensorManagerMicroService = project.
   dependsOn(core).
   settings(commonSettings: _*).
   settings(
-    name := "cobalt-SensorManager",
+    name := "sensorservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
-  .settings(
-    packageName in Docker := "sensorservice"
-  )

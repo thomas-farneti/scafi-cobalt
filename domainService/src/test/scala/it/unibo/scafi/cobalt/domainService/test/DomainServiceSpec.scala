@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import it.unibo.scafi.cobalt.common.ExecutionContextProvider
 import it.unibo.scafi.cobalt.domainService.core.{DomainRepositoryMockComponent, DomainServiceComponent}
-import it.unibo.scafi.cobalt.domainService.impl.HttpDomainComponent
+import it.unibo.scafi.cobalt.domainService.impl.DomainApiComponent
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.concurrent.ExecutionContext
@@ -15,7 +15,7 @@ class DomainServiceSpec extends WordSpec with Matchers with ScalatestRouteTest w
 
 
   "The Domain service" should {
-    val routing = new HttpDomainComponent with DomainServiceComponent with DomainRepositoryMockComponent with ExecutionContextProvider {
+    val routing = new DomainApiComponent with DomainServiceComponent with DomainRepositoryMockComponent with ExecutionContextProvider {
       override implicit val impExecutionContext: ExecutionContext = executor
     }
 

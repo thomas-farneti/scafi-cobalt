@@ -11,6 +11,15 @@ services:
         aliases:
           - redis
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - network
+    volumes:
+      - /Users/Thomas/IdeaProjects/scafi-cobalt/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+
   executionDb:
     image: redis
     ports:

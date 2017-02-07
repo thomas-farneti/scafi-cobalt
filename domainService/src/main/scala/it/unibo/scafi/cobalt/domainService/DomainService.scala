@@ -12,7 +12,7 @@ import it.unibo.scafi.cobalt.common.ExecutionContextProvider
 import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.core.messages.SensorData
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
-import it.unibo.scafi.cobalt.domainService.impl.{HttpDomainComponent, RedisDomainRepositoryComponent}
+import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RedisDomainRepositoryComponent}
 import redis.RedisClient
 import spray.json._
 
@@ -28,7 +28,7 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
 
   val redis: RedisClient = RedisClient(host = redisHost, port = redisPort, password = Option(redisPassword), db = Option(redisDb))
 
-  val env = new HttpDomainComponent with DomainServiceComponent with RedisDomainRepositoryComponent with ExecutionContextProvider{
+  val env = new DomainApiComponent with DomainServiceComponent with RedisDomainRepositoryComponent with ExecutionContextProvider{
     override val redisClient: RedisClient = redis
     override implicit val impExecutionContext: ExecutionContext = dispatcher
   }

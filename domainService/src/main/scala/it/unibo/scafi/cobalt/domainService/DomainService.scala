@@ -9,8 +9,8 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import io.scalac.amqp.{Connection, Queue}
 import it.unibo.scafi.cobalt.common.ExecutionContextProvider
-import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.core.messages.SensorData
+import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.common.messages.SensorData
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
 import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RedisDomainRepositoryComponent}
 import redis.RedisClient

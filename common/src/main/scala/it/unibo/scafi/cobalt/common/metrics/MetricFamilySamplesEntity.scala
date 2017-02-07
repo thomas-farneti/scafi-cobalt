@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.domainService.impl
+package it.unibo.scafi.cobalt.common.metrics
 
 import java.io.{StringWriter, Writer}
 import java.util

@@ -3,19 +3,21 @@ version: "3"
 services:
 
   ingestionService:
-    image: scaficobalt/ingestionservice
+    image: scaficobalt/ingestionservice:latest
     ports:
-      - "127.0.0.1:80:8080"
+      - "80:8080"
     networks:
-      - sensornet
-      - network
+      sensornet:
+      network:
+        aliases:
+          - ingestion
     deploy:
-      replicas: 2
+      replicas: 1
 
   domainService:
-    image: scaficobalt/domainservice
+    image: scaficobalt/domainservice:latest
     ports:
-      - "127.0.0.1:8081:8080"k
+      - "8081:8080"
     depends_on:
       - ingestionService
     networks:
@@ -23,23 +25,25 @@ services:
         aliases:
           - domain
       domainnet:
-#    deploy:
-#      replicas: 3
+    deploy:
+      replicas: 3
 
   executionService:
-    image: scaficobalt/executionservice
+    image: scaficobalt/executionservice:latest
     ports:
-      - "127.0.0.1:8083:8080"
+      - "8083:8080"
     depends_on:
       - ingestionService
     networks:
-      - network
-      - executionnet
+      network:
+        aliases:
+          - execution
+      executionnet:
     deploy:
-      replicas: 10
+      replicas: 1
 
   sensorService:
-    image: scaficobalt/sensorservice
+    image: scaficobalt/sensorservice:latest
     ports:
       - "8082:8080"
     networks:

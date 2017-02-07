@@ -1,5 +1,5 @@
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.dockerUpdateLatest
-import sbt.Keys.{aggregate, version}
+import sbt.Keys.version
 
 scalacOptions := Seq(
   "-unchecked",
@@ -38,6 +38,7 @@ val scafi_core  = "it.unibo.apice.scafiteam" % "scafi-core_2.11"  % "0.1.0"
 
 val prometheusClient = "io.prometheus" % "simpleclient" % "0.0.20"
 val prometheusCommon = "io.prometheus" % "simpleclient_common" % "0.0.20"
+val prometheusHotSpot = "io.prometheus" % "simpleclient_hotspot" % "0.0.20"
 
 // Cross-Building
 crossScalaVersions := Seq("2.11.8")
@@ -45,7 +46,8 @@ crossScalaVersions := Seq("2.11.8")
 // Common settings across projects
 lazy val commonSettings = Seq(
   organization := "it.unibo.apice.scafiteam",
-  scalaVersion := scalaV
+  scalaVersion := scalaV,
+  dockerRepository := Some("scaficobalt")
 )
 
 lazy val root = (project in file(".")).
@@ -54,67 +56,82 @@ lazy val root = (project in file(".")).
     name := "scafi-cobalt",
     version := "0.1.0"
   ).
-  aggregate(core,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
+  aggregate(common,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
 
-lazy val core = project.
+lazy val common = project.
   settings(commonSettings: _*).
   settings(
     name := "core",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,sprayJson),
-    dockerRepository := Some("scaficobalt")
+    libraryDependencies ++= Seq(scafi_core,sprayJson,prometheusClient,prometheusCommon,prometheusHotSpot)
   )
 
 lazy val domainService = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "domainservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit,prometheusClient,prometheusCommon),
-    dockerUpdateLatest := true,
-    dockerRepository := Some("scaficobalt")
+    dockerUpdateLatest := true
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
 lazy val executionService = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "executionservice",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit),
-    dockerUpdateLatest := true,
-    dockerRepository := Some("scaficobalt")
+    libraryDependencies ++= Seq(scafi_core,
+      akkaHTTP,
+      akkaStream,
+      akkaActor,
+      akkaRemote,
+      rediscala,
+      sprayJson,
+      testKit,
+      scalaTest,
+      reactiveRabbit,
+      prometheusClient,prometheusHotSpot),
+    dockerUpdateLatest := true
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
 lazy val fieldVisualizerService = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "visualizerservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit),
-    dockerUpdateLatest := true,
-    dockerRepository := Some("scaficobalt")
+    dockerUpdateLatest := true
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
 lazy val ingestionService = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "ingestionservice",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit),
-    dockerUpdateLatest := true,
-    dockerRepository := Some("scaficobalt")
+    libraryDependencies ++= Seq(scafi_core,
+      akkaHTTP,
+      akkaStream,
+      akkaActor,
+      akkaRemote,
+      rediscala,
+      sprayJson,
+      testKit,
+      scalaTest,
+      reactiveRabbit,
+      prometheusClient,prometheusHotSpot),
+    dockerUpdateLatest := true
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
 lazy val testDevice = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "testdevice",
@@ -123,13 +140,12 @@ lazy val testDevice = project.
   )
 
 lazy val sensorManagerMicroService = project.
-  dependsOn(core).
+  dependsOn(common).
   settings(commonSettings: _*).
   settings(
     name := "sensorservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest),
-    dockerUpdateLatest := true,
-    dockerRepository := Some("scaficobalt")
+    dockerUpdateLatest := true
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)

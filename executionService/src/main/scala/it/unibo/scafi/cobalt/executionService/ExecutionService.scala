@@ -7,21 +7,22 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.util.ByteString
+import io.prometheus.client.Counter
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
-import it.unibo.scafi.cobalt.core.messages.{FieldData, SensorData}
+import it.unibo.scafi.cobalt.common.messages.{FieldData, SensorData}
 import it.unibo.scafi.cobalt.executionService.core.CobaltBasicIncarnation
 import it.unibo.scafi.cobalt.executionService.impl._
 import it.unibo.scafi.cobalt.executionService.impl.gateway.DockerGatewayComponent
 import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepositoryComponent
 import redis.RedisClient
-import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import spray.json._
 
 import scala.concurrent.ExecutionContext
 
 
-trait Environment extends AkkaHttpExecutionComponent
+trait Environment extends ExecutionApiComponent
   with CobaltExecutionServiceComponent
   with RedisExecutionRepositoryComponent
   with DockerGatewayComponent
@@ -49,6 +50,10 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
 
   Http().bindAndHandle(env.executionRoutes, interface, port)
 
+  val requestsServed = Counter.build()
+    .name("requests_served_total")
+      .help("Total Request processed").register()
+
   val connection = Connection(config)
   connection.queueDeclare(Queue("sensor_events.executionService.queue",durable = true)).onComplete(_=>
   connection.queueBind("sensor_events.executionService.queue","sensor_events","*.gps"))
@@ -60,6 +65,7 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
   Source.fromPublisher(connection.consume(queue = "sensor_events.executionService.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
     .mapAsync(1)(data => {
+      requestsServed.inc()
       env.service.computeNewState(data.deviceId).map(a => a -> data.sensorValue.split(":"))
     })
     .map(s => Routed( s"${s._1.id}", Message(body = ByteString(FieldData(s._1.id,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))

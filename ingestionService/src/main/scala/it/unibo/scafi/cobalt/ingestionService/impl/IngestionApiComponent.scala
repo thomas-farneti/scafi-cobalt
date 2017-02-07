@@ -11,10 +11,13 @@ import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Sink}
 import akka.util.ByteString
 import akka.{Done, NotUsed}
+import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
+import io.prometheus.client.hotspot.DefaultExports
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
-import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.core.messages.SensorData
+import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.common.messages.SensorData
+import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 import spray.json._
 
@@ -33,6 +36,15 @@ class IngestionApiComponent(connection : Connection) { self: IngestionApiCompone
 
   connection.exchangeDeclare(Exchange("sensor_events", Topic, durable = true))
 
+  val metricsEndpoint = new MetricsEndpoint(CollectorRegistry.defaultRegistry)
+  DefaultExports.initialize()
+
+  val requests: Counter = Counter.build()
+    .name("requests_total").help("Total requests.").register()
+  val connectedDevices: Gauge = Gauge.build()
+    .name("connected_devices"). help("Connected devices").register()
+
+
   val routes: Route = {
     path("device" / Segment / "sensor" / Segment / Segment){ (deviceId,sensorName,sensorValue) =>
       put{
@@ -43,20 +55,25 @@ class IngestionApiComponent(connection : Connection) { self: IngestionApiCompone
           }
         }
       }
-    }~
-    path("sensorData"){
-      post{
-        entity(asSourceOf[SensorData]){data =>
-          data
-            .map(da => da.copy(UUID.randomUUID().toString))
-            .alsoTo(persitData)
-            .alsoTo(Sink.foreach(m => println(m)))
-            .via(rabbitMapping)
-            .runWith(Sink.fromSubscriber(connection.publish(exchange = "sensor_events")))
+    }~ sensorsData ~ metricsEndpoint.metricsRoute
 
-          complete{
-            OK
-          }
+  }
+
+  def sensorsData = path("sensorData"){
+    post{
+      entity(asSourceOf[SensorData]){data =>
+        requests.inc()
+        connectedDevices.inc()
+        data
+          .map(da => da.copy(UUID.randomUUID().toString))
+          .alsoTo(persitData)
+          .alsoTo(Sink.foreach(m => println(m)))
+          .via(rabbitMapping)
+          .runWith(Sink.fromSubscriber(connection.publish(exchange = "sensor_events")))
+
+        complete{
+          connectedDevices.dec()
+          OK
         }
       }
     }

@@ -23,8 +23,8 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import io.scalac.amqp._
-import it.unibo.scafi.cobalt.core.messages.FieldData
-import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.common.messages.FieldData
+import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.visualizerService.DockerConfig
 import spray.json._
 

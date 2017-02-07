@@ -10,8 +10,8 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import it.unibo.scafi.cobalt.core.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.core.messages.SensorData
+import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.common.messages.SensorData
 
 import scala.concurrent.Future
 import scala.util.Random

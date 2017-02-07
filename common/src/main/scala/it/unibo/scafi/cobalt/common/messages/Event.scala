@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.core.messages
+package it.unibo.scafi.cobalt.common.messages
 
 /**
   * Created by tfarneti.

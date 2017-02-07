@@ -6,12 +6,12 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.ActorMaterializer
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionGatewayMockComponent, ExecutionMockRepositoryComponent}
-import it.unibo.scafi.cobalt.executionService.impl.{AkkaHttpExecutionComponent, CobaltExecutionServiceComponent}
+import it.unibo.scafi.cobalt.executionService.impl.{CobaltExecutionServiceComponent, ExecutionApiComponent, ExecutionApiComponent$}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.concurrent.ExecutionContext
 
-trait TestEnvironment extends AkkaHttpExecutionComponent
+trait TestEnvironment extends ExecutionApiComponent
   with CobaltExecutionServiceComponent
   with ExecutionMockRepositoryComponent
   with ExecutionGatewayMockComponent

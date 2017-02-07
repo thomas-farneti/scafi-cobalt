@@ -3,8 +3,10 @@ package it.unibo.scafi.cobalt.domainService.impl
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
+import io.prometheus.client.hotspot.DefaultExports
 import io.prometheus.client.{CollectorRegistry, Gauge}
 import it.unibo.scafi.cobalt.common.ExecutionContextProvider
+import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
 import spray.json.DefaultJsonProtocol
 
@@ -15,16 +17,12 @@ import spray.json.DefaultJsonProtocol
 class DomainApiComponent extends DefaultJsonProtocol { self: DomainApiComponent.dependencies =>
 
   val metricsEndpoint = new MetricsEndpoint(CollectorRegistry.defaultRegistry)
-
-  val inprogressRequests : Gauge = Gauge.build()
-    .name("inprogress_requests").help("Inprogress requests.").register()
-
+  DefaultExports.initialize()
 
   val routes = {
     path("nbrs" / Segment) { (deviceId) =>
       get {
         complete {
-          inprogressRequests.inc
           service.getNeighbors(deviceId)
         }
       }
@@ -38,7 +36,7 @@ class DomainApiComponent extends DefaultJsonProtocol { self: DomainApiComponent.
       get{
         complete(service.getNbrsSpatial(deviceId))
       }
-    }~metricsEndpoint.routes
+    }~metricsEndpoint.metricsRoute
   }
 }
 

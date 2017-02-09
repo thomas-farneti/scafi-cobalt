@@ -73,7 +73,8 @@ lazy val domainService = project.
     name := "domainservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit,prometheusClient,prometheusCommon),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(8080)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
@@ -94,7 +95,8 @@ lazy val executionService = project.
       scalaTest,
       reactiveRabbit,
       prometheusClient,prometheusHotSpot),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(8080)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
@@ -105,7 +107,8 @@ lazy val fieldVisualizerService = project.
     name := "visualizerservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest,reactiveRabbit),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(8080)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
@@ -126,7 +129,8 @@ lazy val ingestionService = project.
       scalaTest,
       reactiveRabbit,
       prometheusClient,prometheusHotSpot),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(8080)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)
 
@@ -138,6 +142,7 @@ lazy val testDevice = project.
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,sprayJson)
   )
+  .enablePlugins(JavaAppPackaging)
 
 lazy val sensorManagerMicroService = project.
   dependsOn(common).
@@ -146,6 +151,7 @@ lazy val sensorManagerMicroService = project.
     name := "sensorservice",
     version := "0.1.0",
     libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,rediscala,sprayJson,testKit,scalaTest),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(8080)
   )
   .enablePlugins(DockerPlugin,JavaAppPackaging)

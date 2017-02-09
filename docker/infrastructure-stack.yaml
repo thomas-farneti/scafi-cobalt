@@ -2,52 +2,34 @@ version: "3"
 
 services:
 
-  domainDb:
-    image: redis
+  rabbitmq:
+    image: rabbitmq:3-management
     ports:
-      - "6379"
-    networks:
-      domainnet:
-        aliases:
-          - redis
+      - "15672:15672"
+
+  consul:
+    image: consul:latest
+    ports:
+      - "8500:8500"
 
   prometheus:
     image: prom/prometheus
     ports:
       - "9090:9090"
-    networks:
-      - network
+    depends_on:
+      - consul
     volumes:
       - /Users/Thomas/IdeaProjects/scafi-cobalt/docker/prometheus.yml:/etc/prometheus/prometheus.yml
 
-  executionDb:
+  registrator:
+    command: "-internal consul://consul:8500"
+    image: gliderlabs/registrator:latest
+    depends_on:
+      - consul
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"
+
+  redis:
     image: redis
     ports:
       - "6379"
-    networks:
-      executionnet:
-        aliases:
-          - redis
-
-  sensorDb:
-    image: redis
-    ports:
-      - "6379"
-    networks:
-      sensornet:
-        aliases:
-          - redis
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - network
-
-networks:
-  network:
-  domainnet:
-  sensornet:
-  executionnet:

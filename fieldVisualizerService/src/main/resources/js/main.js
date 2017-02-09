@@ -311,82 +311,82 @@ self.map.on('click', function(event) {
     setCoordinateAndShow(coordinate, pixel);
 });
 
-self.drawHotSpotsOnMap = function(data) {
-   console.log("draw clusters")
-   if (self.hotspotSource.getFeatures().length > 0) {
-     console.log("cleared hotspotSource");
-     self.hotspotSource.clear();
-   }
-
-   for (var i = 0; i < data.length; i++) {
-       var field = data[i];
-       var feature = new ol.Feature(field);
-       feature.setId("Cluster-"+field.id);
-
-       var latitude = field.latitude;
-       var longitude = field.longitude;
-       var point = new ol.geom.Point(ol.proj.fromLonLat([longitude,latitude]));
-
-       style = new ol.style.Style({
-             image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-             src: 'data/bus.png'
-             }))
-         });
-
-       feature.setGeometry(point)
-       feature.setStyle(style)
-
-       self.hotspotSource.addFeature(feature);
-   }
-
-}
+// self.drawHotSpotsOnMap = function(data) {
+//    console.log("draw clusters")
+//    if (self.hotspotSource.getFeatures().length > 0) {
+//      console.log("cleared hotspotSource");
+//      self.hotspotSource.clear();
+//    }
+//
+//    for (var i = 0; i < data.length; i++) {
+//        var field = data[i];
+//        var feature = new ol.Feature(field);
+//        feature.setId("Cluster-"+field.id);
+//
+//        var latitude = field.latitude;
+//        var longitude = field.longitude;
+//        var point = new ol.geom.Point(ol.proj.fromLonLat([longitude,latitude]));
+//
+//        style = new ol.style.Style({
+//              image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+//              src: 'data/bus.png'
+//              }))
+//          });
+//
+//        feature.setGeometry(point)
+//        feature.setStyle(style)
+//
+//        self.hotspotSource.addFeature(feature);
+//    }
+//
+// }
 
 self.pickColor = function() {
 return "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
 };
 
-$(function() {
-    $( "#slider" ).slider({
-        range: "max",
-        min: 0,
-        max: 10,
-        value: 0,
-        slide: function( event, ui ) {
-            $( "#amount" ).val( ui.value );
-
-            var mapExtent = self.map.getView().calculateExtent(map.getSize());
-            var bottomRight = ol.extent.getBottomRight(mapExtent);
-            var topLeft = ol.extent.getTopLeft(mapExtent);
-            var brLonLat = ol.proj.toLonLat(bottomRight);
-            var tlLonLat = ol.proj.toLonLat(topLeft);
-
-            if (ui.value > 0) {
-                self.requestVehiclesOnBoundingBox(tlLonLat[1]+","+tlLonLat[0]+","+brLonLat[1]+","+brLonLat[0], ui.value)
-            } else {
-                //clean old data
-                console.log("cleaning old data")
-                self.vehicleSource.clear();
-            }
-        }
-    });
-    $( "#amount" ).val( $( "#slider" ).slider( "value" ) );
-    $( "#hotspot" ).button().click(function() {
-        if ($('#hotspot').is(':checked')) {
-            console.log("draw hotspots")
-            var mapExtent = self.map.getView().calculateExtent(map.getSize());
-            var bottomRight = ol.extent.getBottomRight(mapExtent);
-            var topLeft = ol.extent.getTopLeft(mapExtent);
-            var brLonLat = ol.proj.toLonLat(bottomRight);
-            var tlLonLat = ol.proj.toLonLat(topLeft);
-
-            self.ajax(self.akkaHotSpotBasis+tlLonLat[1]+","+tlLonLat[0]+","+brLonLat[1]+","+brLonLat[0]).done(function(data){
-              self.drawHotSpotsOnMap(data)
-            });
-        } else {
-          if (self.hotspotSource.getFeatures().length > 0) {
-             console.log("cleared hotspotSource");
-             self.hotspotSource.clear();
-          }
-        }
-    });
-});
+// $(function() {
+//     $( "#slider" ).slider({
+//         range: "max",
+//         min: 0,
+//         max: 10,
+//         value: 0,
+//         slide: function( event, ui ) {
+//             $( "#amount" ).val( ui.value );
+//
+//             var mapExtent = self.map.getView().calculateExtent(map.getSize());
+//             var bottomRight = ol.extent.getBottomRight(mapExtent);
+//             var topLeft = ol.extent.getTopLeft(mapExtent);
+//             var brLonLat = ol.proj.toLonLat(bottomRight);
+//             var tlLonLat = ol.proj.toLonLat(topLeft);
+//
+//             if (ui.value > 0) {
+//                 self.requestVehiclesOnBoundingBox(tlLonLat[1]+","+tlLonLat[0]+","+brLonLat[1]+","+brLonLat[0], ui.value)
+//             } else {
+//                 //clean old data
+//                 console.log("cleaning old data")
+//                 self.vehicleSource.clear();
+//             }
+//         }
+//     });
+//     $( "#amount" ).val( $( "#slider" ).slider( "value" ) );
+//     $( "#hotspot" ).button().click(function() {
+//         if ($('#hotspot').is(':checked')) {
+//             console.log("draw hotspots")
+//             var mapExtent = self.map.getView().calculateExtent(map.getSize());
+//             var bottomRight = ol.extent.getBottomRight(mapExtent);
+//             var topLeft = ol.extent.getTopLeft(mapExtent);
+//             var brLonLat = ol.proj.toLonLat(bottomRight);
+//             var tlLonLat = ol.proj.toLonLat(topLeft);
+//
+//             self.ajax(self.akkaHotSpotBasis+tlLonLat[1]+","+tlLonLat[0]+","+brLonLat[1]+","+brLonLat[0]).done(function(data){
+//               self.drawHotSpotsOnMap(data)
+//             });
+//         } else {
+//           if (self.hotspotSource.getFeatures().length > 0) {
+//              console.log("cleared hotspotSource");
+//              self.hotspotSource.clear();
+//           }
+//         }
+//     });
+// });

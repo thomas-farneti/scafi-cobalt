@@ -17,6 +17,7 @@ import it.unibo.scafi.cobalt.executionService.impl.gateway.DockerGatewayComponen
 import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepositoryComponent
 import redis.RedisClient
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
+import it.unibo.scafi.cobalt.core.incarnation.ScafiCobaltIncarnation
 import spray.json._
 
 import scala.concurrent.ExecutionContext
@@ -34,7 +35,7 @@ trait Environment extends ExecutionApiComponent
   with ExecutionContextProvider
 
 
-object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
+object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit def executionContext = system.dispatcher
@@ -62,12 +63,16 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
   connection.queueDeclare(Queue("field_events.test.queue",durable = true)).onComplete(_=>
     connection.queueBind("field_events.test.queue","field_events","*"))
 
+  import akka.stream.ActorAttributes.supervisionStrategy
+  import akka.stream.Supervision.resumingDecider
+
   Source.fromPublisher(connection.consume(queue = "sensor_events.executionService.queue"))
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-    .mapAsync(1)(data => {
+     .mapAsync(1)(data => {
       requestsServed.inc()
       env.service.computeNewState(data.deviceId).map(a => a -> data.sensorValue.split(":"))
     })
+    .withAttributes(supervisionStrategy(resumingDecider))
     .map(s => Routed( s"${s._1.id}", Message(body = ByteString(FieldData(s._1.id,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))
     .runWith(Sink.fromSubscriber(connection.publish(exchange = "field_events")))
 }

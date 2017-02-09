@@ -42,7 +42,6 @@ object VisualizerService extends App with RestService with DockerConfig with Akk
   }
 
   Http().bindAndHandle(route(), interface, port)
-
   Http().bindAndHandleSync(requestHandler, interface, 8001)
 
   def graphFlowWithStats(router: ActorRef): Flow[Message, Message, _] = {

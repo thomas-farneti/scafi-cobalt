@@ -1,0 +1,83 @@
+version: "3"
+
+services:
+
+  domainDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      domainnet:
+        aliases:
+          - redis
+
+  consul:
+    image: consul:latest
+    ports:
+      - "8500:8500"
+    networks:
+      - network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - consul
+    networks:
+      - network
+    volumes:
+      - /Users/Thomas/IdeaProjects/scafi-cobalt/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  registrator:
+    command: "-internal consul://consul:8500"
+    image: gliderlabs/registrator:latest
+    depends_on:
+      - consul
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"
+    networks:
+      - network
+
+#  prometheus:
+#    image: fn61/prometheus-docker-swarm
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - network
+#    volumes:
+#     - /var/run/docker.sock:/var/run/docker.sock
+
+  executionDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      executionnet:
+        aliases:
+          - redis
+
+  sensorDb:
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      sensornet:
+        aliases:
+          - redis
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - network
+
+networks:
+  network:
+    driver:
+      "overlay"
+  domainnet:
+  sensornet:
+  executionnet:

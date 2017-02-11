@@ -5,4 +5,5 @@ package it.unibo.scafi.cobalt.common.messages
   */
 trait Event {
   val id:String
+  val topic: String
 }

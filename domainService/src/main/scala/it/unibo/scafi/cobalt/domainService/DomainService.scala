@@ -10,10 +10,11 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import io.scalac.amqp.{Connection, Queue}
 import it.unibo.scafi.cobalt.common.ExecutionContextProvider
+import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.common.messages.{SensorData, SensorUpdated}
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
-import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RabbitPublisher, RedisDomainRepositoryComponent}
+import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RedisDomainRepositoryComponent}
 import redis.RedisClient
 import spray.json._
 
@@ -44,7 +45,7 @@ object DomainService extends App with TestConfig with AkkaHttpConfig with RedisC
 
   val pub = new RabbitPublisher(connection)
 
-  pub.streamToConsumer[SensorUpdated]("sensor_events.domainMicroservice.queue")
+  pub.sourceFromRabbit[SensorUpdated]("sensor_events.domainMicroservice.queue")
   .log("before-publish")
   .withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel))
   .map(m => m.deviceId -> m.sensorValue.split(":"))

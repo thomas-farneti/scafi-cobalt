@@ -9,6 +9,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.util.ByteString
 import io.prometheus.client.Counter
 import io.scalac.amqp._
+import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.common.messages.{FieldData, SensorData}
 import it.unibo.scafi.cobalt.executionService.core.CobaltBasicIncarnation
@@ -75,4 +76,8 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     .withAttributes(supervisionStrategy(resumingDecider))
     .map(s => Routed( s"${s._1.id}", Message(body = ByteString(FieldData(s._1.id,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))
     .runWith(Sink.fromSubscriber(connection.publish(exchange = "field_events")))
+}
+
+class StreamService(rabbitPublisher: RabbitPublisher){
+
 }

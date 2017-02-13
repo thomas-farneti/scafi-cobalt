@@ -63,7 +63,7 @@ lazy val common = project.
   settings(
     name := "core",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,sprayJson,prometheusClient,prometheusCommon,prometheusHotSpot)
+    libraryDependencies ++= Seq(scafi_core,sprayJson,prometheusClient,prometheusCommon,prometheusHotSpot,akkaStream,akkaActor,reactiveRabbit)
   )
 
 lazy val domainService = project.

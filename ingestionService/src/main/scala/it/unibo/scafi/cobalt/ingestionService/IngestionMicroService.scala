@@ -4,9 +4,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import io.scalac.amqp.{Connection, Exchange, Topic}
+import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
 import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
-import it.unibo.scafi.cobalt.ingestionService.impl.{IngestionApiComponent, RabbitPublisher, RedisIngestionServiceRepoComponent}
+import it.unibo.scafi.cobalt.ingestionService.impl.{IngestionApiComponent, RedisIngestionServiceRepoComponent}
 import redis.RedisClient
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}

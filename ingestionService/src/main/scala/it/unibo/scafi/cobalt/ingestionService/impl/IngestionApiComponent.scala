@@ -12,6 +12,7 @@ import akka.stream.Attributes
 import akka.stream.scaladsl.{Flow, Sink}
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
 import io.scalac.amqp._
+import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.common.messages.{SensorData, SensorUpdated}
 import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
@@ -61,7 +62,7 @@ class IngestionApiComponent(publisher : RabbitPublisher) { self: IngestionApiCom
           .map(d => SensorUpdated(d.id,d.deviceId+"."+d.sensorName,d.deviceId,d.sensorName,d.sensorValue))
           .log("before-publish")
           .withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel))
-          .runWith(publisher.streamToPublisher("sensor_events", "SensorUpdated"))
+          .runWith(publisher.sinkToRabbit("sensor_events", "SensorUpdated"))
 
         complete{
           connectedDevices.dec()

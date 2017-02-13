@@ -51,9 +51,7 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
     router ! AddRoutee(ActorRefRoutee(self))
   }
 
-  // cleanly remove this actor from the router. To
-  // make sure our custom router only keeps track of
-  // alive actors.
+  // custom router only keeps track of alive actors
   override def postStop(): Unit = {
     log.info("Publisher postStop: removing self from routee")
     router ! RemoveRoutee(ActorRefRoutee(self))

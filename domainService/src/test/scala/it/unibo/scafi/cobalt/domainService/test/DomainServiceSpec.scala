@@ -32,5 +32,12 @@ class DomainServiceSpec extends WordSpec with Matchers with ScalatestRouteTest w
         //responseAs[Set[String]].head shouldBe "2"
       }
     }
+
+    "Return Devices in BB" in {
+      Put("/bb?lat1=45.234&lon1=45.234&lat2=34.4524&lon2=45.231") ~> routing.routes ~> check {
+        status shouldEqual StatusCodes.OK
+        //responseAs[Set[String]].head shouldBe "2"
+      }
+    }
   }
 }

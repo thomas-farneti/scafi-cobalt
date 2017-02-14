@@ -12,15 +12,12 @@ import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Source}
 import it.unibo.scafi.cobalt.visualizerService.actors.{FieldDatasFromRabbitActor, FieldPublisher, RouterActor}
 import GraphDSL.Implicits._
 import io.scalac.amqp.{Connection, Queue}
+import it.unibo.scafi.cobalt.common.domain.{BoundingBox, LatLon}
 
 import scala.util.{Failure, Success}
-/**
-  * Created by tfarneti.
-  */
 
-case class LatLon(lat: Float, lon: Float)
 
-case class BoundingBox(leftTop: LatLon, rightBotom: LatLon)
+
 
 object VisualizerService extends App with RestService with DockerConfig with AkkaHttpConfig{
   implicit val system = ActorSystem("service-api-http")

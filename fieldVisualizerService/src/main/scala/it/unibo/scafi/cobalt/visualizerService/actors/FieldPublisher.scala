@@ -19,9 +19,9 @@ package it.unibo.scafi.cobalt.visualizerService.actors
 import akka.actor.{ActorLogging, ActorRef, Props, Stash}
 import akka.routing.{ActorRefRoutee, AddRoutee, RemoveRoutee}
 import akka.stream.actor.ActorPublisher
+import it.unibo.scafi.cobalt.common.domain.BoundingBox
 import it.unibo.scafi.cobalt.common.messages.FieldData
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.visualizerService.BoundingBox
 import spray.json._
 
 import scala.annotation.tailrec

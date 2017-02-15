@@ -1,7 +1,7 @@
 package it.unibo.scafi.cobalt.domainService.impl
 
-import it.unibo.scafi.cobalt.common.ExecutionContextProvider
 import it.unibo.scafi.cobalt.common.domain.{BoundingBox, LatLon}
+import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.domainService.core.DomainRepositoryComponent
 import redis.RedisClient
 import redis.api.geo.DistUnits

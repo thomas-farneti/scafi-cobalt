@@ -1,20 +1,16 @@
-import java.io.IOException
-
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.StatusCodes.Success
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.scaladsl.Source
 import akka.stream.{ActorMaterializer, ThrottleMode}
-import akka.stream.scaladsl.{Flow, Sink, Source}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.common.messages.SensorData
 
 import scala.concurrent.duration._
-import scala.util.{Failure, Random, Success}
+import scala.util.Failure
 
 
 object Main extends App{

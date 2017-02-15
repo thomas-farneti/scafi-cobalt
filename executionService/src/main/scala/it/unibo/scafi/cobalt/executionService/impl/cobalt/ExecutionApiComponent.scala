@@ -1,13 +1,12 @@
-package it.unibo.scafi.cobalt.executionService.impl
+package it.unibo.scafi.cobalt.executionService.impl.cobalt
 
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
+import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
-import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
-import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionServiceComponent}
+import it.unibo.scafi.cobalt.executionService.core.ExecutionServiceComponent
 /**
   * Created by tfarneti.
   */
@@ -22,8 +21,9 @@ trait ExecutionApiComponent { self: ExecutionApiComponent.dependencies =>
       post {
         extractRequestEntity{ entity =>
           entity.discardBytes()
+          val state = service.execRound(deviceId)
           complete {
-            service.computeNewState(deviceId).map[ToResponseMarshallable] { s =>
+            state.map[ToResponseMarshallable] { s =>
               s.id+" -> "+s.export
             }
           }

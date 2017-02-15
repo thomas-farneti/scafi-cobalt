@@ -3,8 +3,8 @@ package it.unibo.scafi.cobalt.sensorManager.impl
 import it.unibo.scafi.cobalt.sensorManager.core.SensorManagerRepositoryComponent
 import redis.RedisClient
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by tfarneti.

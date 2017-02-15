@@ -6,9 +6,10 @@ import scala.concurrent.Future
   * Created by tfarneti.
   */
 trait ExecutionServiceComponent { self: ExecutionServiceCore =>
-  def service: ComputingService
+  def service: ExecutionService
 
-  trait ComputingService{
-    def computeNewState(deviceId:ID):Future[STATE]
+  trait ExecutionService{
+    def execRound(deviceId:ID):Future[STATE]
+    def fetchState(deviceId:ID): Future[STATE]
   }
 }

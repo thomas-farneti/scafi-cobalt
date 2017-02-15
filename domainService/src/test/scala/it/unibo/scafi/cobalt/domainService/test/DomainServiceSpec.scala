@@ -3,7 +3,7 @@ package it.unibo.scafi.cobalt.domainService.test
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import it.unibo.scafi.cobalt.common.ExecutionContextProvider
+import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.domainService.core.{DomainRepositoryMockComponent, DomainServiceComponent}
 import it.unibo.scafi.cobalt.domainService.impl.DomainApiComponent
 import org.scalatest.{Matchers, WordSpec}

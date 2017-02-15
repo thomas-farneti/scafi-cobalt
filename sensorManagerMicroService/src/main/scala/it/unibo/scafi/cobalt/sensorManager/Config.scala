@@ -3,8 +3,6 @@ package it.unibo.scafi.cobalt.sensorManager
 /**
   * Created by tfarneti.
   */
-import com.typesafe.config.ConfigFactory
-
 import com.typesafe.config.{Config, ConfigFactory}
 
 trait Configuration {

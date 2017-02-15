@@ -9,14 +9,12 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Attributes
-import akka.stream.scaladsl.{Flow, Sink}
+import akka.stream.scaladsl.Sink
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
-import io.scalac.amqp._
-import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
+import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.common.messages.{SensorData, SensorUpdated}
 import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
-import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 
 import scala.concurrent.Future

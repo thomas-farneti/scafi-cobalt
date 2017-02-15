@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.common
+package it.unibo.scafi.cobalt.common.infrastructure
 
 import akka.actor.ActorSystem
 

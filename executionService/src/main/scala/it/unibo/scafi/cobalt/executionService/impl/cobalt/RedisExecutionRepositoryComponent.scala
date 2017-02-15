@@ -1,7 +1,7 @@
-package it.unibo.scafi.cobalt.executionService.impl.repository
+package it.unibo.scafi.cobalt.executionService.impl.cobalt
 
 import akka.util.ByteString
-import it.unibo.scafi.cobalt.executionService.core.{CobaltBasicIncarnation, ExecutionRepositoryComponent}
+import it.unibo.scafi.cobalt.executionService.core.ExecutionRepositoryComponent
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future

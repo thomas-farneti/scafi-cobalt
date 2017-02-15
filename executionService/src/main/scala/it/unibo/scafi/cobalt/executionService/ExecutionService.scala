@@ -1,24 +1,18 @@
 package it.unibo.scafi.cobalt.executionService
 
-import java.util.UUID
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import io.prometheus.client.Counter
 import io.scalac.amqp._
-import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
-import it.unibo.scafi.cobalt.common.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
-import it.unibo.scafi.cobalt.common.messages.{FieldData, SensorData}
-import it.unibo.scafi.cobalt.executionService.core.CobaltBasicIncarnation
-import it.unibo.scafi.cobalt.executionService.impl._
-import it.unibo.scafi.cobalt.executionService.impl.gateway.DockerGatewayComponent
-import it.unibo.scafi.cobalt.executionService.impl.repository.RedisExecutionRepositoryComponent
-import redis.RedisClient
+import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.core.incarnation.ScafiCobaltIncarnation
+import it.unibo.scafi.cobalt.common.messages.{FieldData, SensorData}
+import it.unibo.scafi.cobalt.executionService.impl._
+import it.unibo.scafi.cobalt.executionService.impl.cobalt._
+import redis.RedisClient
 import spray.json._
 
 import scala.concurrent.ExecutionContext
@@ -27,7 +21,7 @@ import scala.concurrent.ExecutionContext
 trait Environment extends ExecutionApiComponent
   with CobaltExecutionServiceComponent
   with RedisExecutionRepositoryComponent
-  with DockerGatewayComponent
+  with CobaltExecutionGatewayComponent
   with CobaltBasicIncarnation
   with DockerConfig
   with ServicesConfiguration
@@ -71,7 +65,7 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
      .mapAsync(1)(data => {
       requestsServed.inc()
-      env.service.computeNewState(data.deviceId).map(a => a -> data.sensorValue.split(":"))
+      env.service.execRound(data.deviceId).map(a => a -> data.sensorValue.split(":"))
     })
     .withAttributes(supervisionStrategy(resumingDecider))
     .map(s => Routed( s"${s._1.id}", Message(body = ByteString(FieldData(s._1.id,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))

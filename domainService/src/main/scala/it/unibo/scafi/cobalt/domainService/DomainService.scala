@@ -6,17 +6,12 @@ import akka.event.Logging.InfoLevel
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives.logRequestResult
 import akka.stream.{ActorMaterializer, Attributes}
-import akka.stream.scaladsl.{Sink, Source}
-import akka.util.ByteString
 import io.scalac.amqp.{Connection, Queue}
-import it.unibo.scafi.cobalt.common.ExecutionContextProvider
-import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
-import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.{SensorData, SensorUpdated}
+import it.unibo.scafi.cobalt.common.infrastructure.{ExecutionContextProvider, RabbitPublisher}
+import it.unibo.scafi.cobalt.common.messages.SensorUpdated
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
 import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RedisDomainRepositoryComponent}
 import redis.RedisClient
-import spray.json._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 

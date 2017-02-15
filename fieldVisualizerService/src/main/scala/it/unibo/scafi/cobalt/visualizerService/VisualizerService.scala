@@ -6,15 +6,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, Uri}
-import akka.http.scaladsl.server.Directives._
-import akka.stream.{ActorMaterializer, FlowShape}
+import akka.stream.scaladsl.GraphDSL.Implicits._
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Source}
-import it.unibo.scafi.cobalt.visualizerService.actors.{FieldDatasFromRabbitActor, FieldPublisher, RouterActor}
-import GraphDSL.Implicits._
-import io.scalac.amqp.{Connection, Queue}
+import akka.stream.{ActorMaterializer, FlowShape}
 import it.unibo.scafi.cobalt.common.domain.{BoundingBox, LatLon}
-
-import scala.util.{Failure, Success}
+import it.unibo.scafi.cobalt.visualizerService.actors.{FieldDatasFromRabbitActor, FieldPublisher, RouterActor}
 
 
 

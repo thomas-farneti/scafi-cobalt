@@ -25,16 +25,6 @@ class ScafiExecutionServiceSpec extends WordSpec with Matchers{
       while (!res.isCompleted){}
 
       res.map(println(_))
-
-      res = for{
-        s1 <- env.service.execRound("1")
-        s2 <- env.service.execRound("2")
-        s3 <- env.service.execRound("3")
-      }yield ""+s1+"\n"+s2+"\n"+s3
-
-      while (!res.isCompleted){}
-
-      res.map(println(_))
     }
   }
 }

@@ -10,10 +10,11 @@ import scala.concurrent.Future
   * Created by tfarneti.
   */
 trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent{ self: ScafiIncarnation =>
-  override def repository = new ScafiMockRepo
+  @transient private val singleton = new ScafiMockRepo
+  override def repository = singleton
 
   class ScafiMockRepo extends Repository{
-    private val db = collection.mutable.Map("1" -> serialize[StateImpl](StateImpl("1", new ExportImpl())))
+    private val db = collection.mutable.Map[String,Array[Byte]]()
 
     override def get(id: String): Future[Option[StateImpl]] = {
       Future.successful{
@@ -27,10 +28,10 @@ trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent
 
     override def mGet(id: Set[String]): Future[Seq[Option[StateImpl]]] = {
       Future.successful{
-        id.map(i => db.get(i)).map{
+        id.map(i => db.get(i) match {
           case Some(v) => Some(deserialise[StateImpl](v))
           case _ => None
-        }.toSeq
+        }).toSeq
       }
     }
 

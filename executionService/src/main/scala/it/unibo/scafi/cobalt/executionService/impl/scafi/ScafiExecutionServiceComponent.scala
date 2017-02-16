@@ -5,7 +5,6 @@ import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
 
 import scala.concurrent.Future
-import scala.util.Try
 
 /**
   * Created by tfarneti.
@@ -14,15 +13,16 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
   def service = new ScafiExecutionService
 
   class ScafiExecutionService extends ExecutionService{
+
     override def execRound(deviceId: String): Future[StateImpl] = {
 
-      val newState = createContext(deviceId).map{ c =>
-        StateImpl(deviceId,new Gradient("source").round(c))
-      }
+      val contextF = createContext(deviceId)
 
-      newState.map(s => repository.set(s.id,s))
-
-      newState
+      for{
+        ctx <- contextF
+        state = StateImpl(deviceId,new HopGradient("source").round(ctx))//StateImpl(deviceId,new HopGradient("source").round(ctx))
+        res <- repository.set(state.id,state)
+      } yield state
     }
 
     override def fetchState(deviceId: String): Future[StateImpl] = {
@@ -49,7 +49,6 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
         }
       }yield nbrsExports ++ lastExport
 
-
       for{
         exports <- exportsF
         localSensors <- localSensorsF
@@ -68,6 +67,17 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 
     override def main(): Any = gradient(sense(srcSensor))
   }
+
+  class HopGradient(val srcSensor: LSNS) extends AggregateProgram {
+    def hopGradient(source: Boolean): Int = {
+      rep(1000){
+        hops => { mux(source) { 0 } { 1+minHood[Int](nbr[Int]{ hops }) } }
+      }
+    }
+
+    override def main(): Any = hopGradient(sense(srcSensor))
+  }
+
 }
 
 object ScafiExecutionServiceComponent {

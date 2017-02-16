@@ -4,14 +4,11 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.common.infrastructure.ActorSystemProvider
-import it.unibo.scafi.cobalt.common.messages.Event
 import it.unibo.scafi.cobalt.executionService.core.ExecutionRepositoryComponent
 import it.unibo.scafi.cobalt.executionService.impl.RedisConfiguration
-import it.unibo.scafi.cobalt.executionService.impl.cobalt.CobaltBasicIncarnation
 import redis.{ByteStringFormatter, RedisClient}
 
 import scala.concurrent.Future
-import scala.util.Try
 
 /**
   * Created by tfarneti.

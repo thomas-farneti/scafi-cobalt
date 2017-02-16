@@ -1,38 +1,40 @@
 package it.unibo.scafi.cobalt.test.executionService
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.StatusCodes._
-import akka.stream.ActorMaterializer
-import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
-import it.unibo.scafi.cobalt.executionService.impl.scafi._
 import org.scalatest.{Matchers, WordSpec}
-
-import scala.concurrent.ExecutionContext
-
-class TestEnvironment(@transient implicit val impExecutionContext: ExecutionContext ) extends
-  ScafiExecutionServiceComponent
-  with ScafiMockExecutionRepositoryComponent
-  with ScafiMockExecutionGatewayComponent
-  with ScafiIncarnation
-  with ExecutionContextProvider
 
 /**
   * Created by tfarneti.
   */
-class ScafiExecutionServiceSpec extends WordSpec with Matchers with ScalatestRouteTest{
+class ScafiExecutionServiceSpec extends WordSpec with Matchers{
+  implicit val system = ActorSystem()
+  implicit val exec = system.dispatcher
+
   "The Execution service" should {
 
-    val env = new TestEnvironment()
 
-    val api = new ScafiExecutionServiceApiComponent(env)
+    val env = new TestEnvironment
 
     "Compute a new state for device" in {
-      Post("/compute/1") ~> api.executionRoutes ~> check {
-        status shouldEqual OK
-        println(responseAs[String])
-      }
+      var res = for{
+        s1 <- env.service.execRound("1")
+        s2 <- env.service.execRound("2")
+        s3 <- env.service.execRound("3")
+      }yield ""+s1+"\n"+s2+"\n"+s3
 
+      while (!res.isCompleted){}
+
+      res.map(println(_))
+
+      res = for{
+        s1 <- env.service.execRound("1")
+        s2 <- env.service.execRound("2")
+        s3 <- env.service.execRound("3")
+      }yield ""+s1+"\n"+s2+"\n"+s3
+
+      while (!res.isCompleted){}
+
+      res.map(println(_))
     }
   }
 }

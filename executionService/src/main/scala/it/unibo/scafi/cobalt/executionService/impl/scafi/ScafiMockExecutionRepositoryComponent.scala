@@ -2,6 +2,7 @@ package it.unibo.scafi.cobalt.executionService.impl.scafi
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
+import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.ExecutionRepositoryComponent
 
 import scala.concurrent.Future
@@ -9,7 +10,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent{ self: ScafiIncarnation =>
+trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent{ self: ScafiIncarnation with ExecutionContextProvider=>
   @transient private val singleton = new ScafiMockRepo
   override def repository = singleton
 
@@ -17,23 +18,18 @@ trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent
     private val db = collection.mutable.Map[String,Array[Byte]]()
 
     override def get(id: String): Future[Option[StateImpl]] = {
-      Future.successful{
+      Future{
         db.get(id).map(v => deserialise[StateImpl](v))
       }
     }
 
     override def set(id: String, state: StateImpl): Future[Boolean] = {
-      Future.successful({db.put(id,serialize[StateImpl](state));true})
-    }
-
-    override def mGet(id: Set[String]): Future[Seq[Option[StateImpl]]] = {
-      Future.successful{
-        id.map(i => db.get(i) match {
-          case Some(v) => Some(deserialise[StateImpl](v))
-          case _ => None
-        }).toSeq
+      Future{
+        db.put(id,serialize[StateImpl](state))
+        true
       }
     }
+
 
     private def serialize[T <: StateImpl](value: T): Array[Byte] = {
       val stream: ByteArrayOutputStream = new ByteArrayOutputStream()
@@ -48,6 +44,13 @@ trait ScafiMockExecutionRepositoryComponent extends ExecutionRepositoryComponent
       val value = ois.readObject.asInstanceOf[T]
       ois.close
       value
+    }
+
+    override def mGet(id: Set[String]): Future[Map[String, Option[StateImpl]]] = {
+      Future(id.map(i => i -> (db.get(i) match {
+        case Some(v) => Some(deserialise[StateImpl](v))
+        case _ => None
+      })).toMap)
     }
   }
 }

@@ -4,7 +4,8 @@ package it.unibo.scafi.cobalt.executionService.impl.scafi
 import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
 
-import scala.concurrent.Future
+import scala.collection.Map
+import scala.concurrent.{Await, Future}
 
 /**
   * Created by tfarneti.
@@ -18,11 +19,20 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 
       val contextF = createContext(deviceId)
 
-      for{
+      val stateF = for{
         ctx <- contextF
-        state = StateImpl(deviceId,new HopGradient("source").round(ctx))//StateImpl(deviceId,new HopGradient("source").round(ctx))
+        p <- Future(println(ctx))
+      } yield StateImpl(deviceId,new HopGradient("source").round(ctx))
+
+      val a = for{
+        state <- stateF
         res <- repository.set(state.id,state)
-      } yield state
+      }yield res
+
+      import scala.concurrent.duration._
+      Await.result(a, 1 second)
+
+      stateF
     }
 
     override def fetchState(deviceId: String): Future[StateImpl] = {
@@ -38,34 +48,28 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
         nbrSensors <- gateway.nbrSensorsSense(nbrsIds)
       }yield nbrSensors
 
-      val lastExportF = repository.get(deviceId)
+      val lastExportF = repository.get(deviceId).map {
+        case Some(v) => Map(v.id -> v.export)
+        case _ => Map(deviceId -> factory.emptyExport())
+      }
 
       val exportsF = for{
         nbrsIds <- nbrsIdsF
-        nbrsExports <- repository.mGet(nbrsIds).map(_.flatten.map(s => s.id -> s.export).toMap)
-        lastExport <- lastExportF.map{
-          case Some(v) => Map(v.id -> v.export)
-          case _ => Map()
-        }
+        nbrsExports <- repository.mGet(nbrsIds).map(_.map(i => i._2 match {
+          case Some(v) => i._1 -> v.export
+          case _ => i._1 -> factory.emptyExport()
+        }).toMap)
+        lastExport <- lastExportF
       }yield nbrsExports ++ lastExport
 
       for{
         exports <- exportsF
         localSensors <- localSensorsF
-        nbrsSensors <- nbrsSensorsF
-      }yield new ContextImpl(deviceId,exports,localSensors,nbrsSensors)
+        //nbrsSensors <- nbrsSensorsF
+      }yield new ContextImpl(deviceId,exports,localSensors,Map[NSNS,Map[ID,Any]]())//nbrsSensors)
 
     }
 
-  }
-
-  class Gradient(val srcSensor: LSNS) extends AggregateProgram {
-    def gradient(source: Boolean): Double =
-      rep(Double.MaxValue){
-        distance => mux(source) { 0.0 } {
-          foldhood(Double.MaxValue)((x,y)=>if (x<y) x else y)(nbr{distance}+nbrvar[Double](NBR_RANGE_NAME))}}
-
-    override def main(): Any = gradient(sense(srcSensor))
   }
 
   class HopGradient(val srcSensor: LSNS) extends AggregateProgram {

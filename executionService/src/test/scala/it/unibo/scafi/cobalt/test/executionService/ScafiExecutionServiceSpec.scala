@@ -3,10 +3,13 @@ package it.unibo.scafi.cobalt.test.executionService
 import akka.actor.ActorSystem
 import org.scalatest.{Matchers, WordSpec}
 
+import scala.concurrent.Await
+import scala.util.{Failure, Success}
+
 /**
   * Created by tfarneti.
   */
-class ScafiExecutionServiceSpec extends WordSpec with Matchers{
+class ScafiExecutionServiceSpec extends WordSpec with Matchers {
   implicit val system = ActorSystem()
   implicit val exec = system.dispatcher
 
@@ -16,15 +19,13 @@ class ScafiExecutionServiceSpec extends WordSpec with Matchers{
     val env = new TestEnvironment
 
     "Compute a new state for device" in {
-      var res = for{
-        s1 <- env.service.execRound("1")
-        s2 <- env.service.execRound("2")
-        s3 <- env.service.execRound("3")
-      }yield ""+s1+"\n"+s2+"\n"+s3
 
-      while (!res.isCompleted){}
+      import scala.concurrent.duration._
 
-      res.map(println(_))
+      0 to 5 foreach{ i =>
+        println(Await.result(env.service.execRound(""+((i % 3)+1)), 1 second).export)
+      }
+
     }
   }
 }

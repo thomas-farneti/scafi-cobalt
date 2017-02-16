@@ -36,12 +36,12 @@ trait ScafiRedisExecutionRepoComponent extends ExecutionRepositoryComponent {sel
 
     override def set(id: String, state: StateImpl): Future[Boolean] = redisClient.set[StateImpl](id, state)
 
-    override def mGet(id: Set[String]): Future[Seq[Option[StateImpl]]] = {
-      if(id.isEmpty)
-        Future.successful(Seq(None))
-      else
-        redisClient.mget(id.toSeq: _*)
-    }
+    override def mGet(id: Set[String]): Future[Map[String,Option[StateImpl]]] = ???
+//      if(id.isEmpty)
+//        Future.successful(Seq(None))
+//      else
+//        redisClient.mget(id.toSeq: _*)
+
 
 
     private def serialize[T <: StateImpl](value: T): Array[Byte] = {

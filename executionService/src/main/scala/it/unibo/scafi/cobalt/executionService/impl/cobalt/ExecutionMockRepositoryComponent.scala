@@ -21,8 +21,8 @@ trait ExecutionMockRepositoryComponent extends ExecutionRepositoryComponent{ sel
       Future.successful({db.put(id,state);true})
     }
 
-    override def mGet(id: Set[ID]): Future[Seq[Option[STATE]]] = {
-      Future.successful(Seq(Some(new STATE("1", new EXPORT))))
+    override def mGet(id: Set[ID]): Future[Map[String,Option[STATE]]] = {
+      Future.successful(Map("1"->Some(new STATE("1", new EXPORT))))
     }
   }
 }

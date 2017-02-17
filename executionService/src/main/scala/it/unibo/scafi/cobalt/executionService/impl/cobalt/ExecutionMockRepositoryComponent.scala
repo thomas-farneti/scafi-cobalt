@@ -8,10 +8,11 @@ import scala.concurrent.Future
   * Created by tfarneti.
   */
 trait ExecutionMockRepositoryComponent extends ExecutionRepositoryComponent{ self: CobaltBasicIncarnation =>
-  override def repository = new MockRepo()
+  private val repoInstance = new MockRepo
+  override def repository = repoInstance
 
   class MockRepo extends Repository{
-    private val db = collection.mutable.Map("1" -> "1")
+    private val db = collection.mutable.Map[String,String]()
 
     override def get(id: ID): Future[Option[String]] = {
       Future.successful(db.get(id))
@@ -22,7 +23,7 @@ trait ExecutionMockRepositoryComponent extends ExecutionRepositoryComponent{ sel
     }
 
     override def mGet(id: Set[ID]): Future[Map[String,String]] = {
-      Future.successful(Map("1" -> "1"))
+      Future.successful(id.flatMap(i => db.get(i).map(i -> _)).toMap)
     }
   }
 }

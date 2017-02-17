@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.test.executionService
+package it.unibo.scafi.cobalt.test.executionService.scafi
 
 import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.impl.scafi.{ScafiExecutionServiceComponent, ScafiIncarnation, ScafiMockExecutionGatewayComponent, ScafiMockExecutionRepositoryComponent}

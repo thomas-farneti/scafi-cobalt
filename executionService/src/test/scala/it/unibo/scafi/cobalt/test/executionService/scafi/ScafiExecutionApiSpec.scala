@@ -1,8 +1,6 @@
-package it.unibo.scafi.cobalt.test.executionService
+package it.unibo.scafi.cobalt.test.executionService.scafi
 
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import it.unibo.scafi.cobalt.executionService.impl.scafi._
 import org.scalatest.{Matchers, WordSpec}
 
 

@@ -1,11 +1,10 @@
 package it.unibo.scafi.cobalt.executionService.impl.scafi
 
-
 import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
 
 import scala.collection.Map
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 /**
   * Created by tfarneti.

@@ -11,12 +11,24 @@ trait ExecutionGatewayMockComponent extends ExecutionGatewayComponent{ self: Cob
   def gateway = new MockGateway
 
   class MockGateway extends Gateway{
-    override def getAllNbrsIds(id: String): Future[Set[String]] = Future.successful(Set("2","3"))
+    override def getAllNbrsIds(id: String): Future[Set[String]] = {
+      id match {
+        case "1" => Future.successful(Set("2"))
+        case "2" => Future.successful(Set("1","3"))
+        case "3" => Future.successful(Set("2"))
+      }
+    }
 
     override def sense(id: String, sensorName: String): Future[String] = Future.successful("10")
 
-    override def nbrSensorsSense(nbrsIds: Set[String]): Future[Map[String, Map[String, Any]]] = Future.successful(Map("source" -> Map("2"->10 , "3" -> 10)))
+    override def nbrSensorsSense(nbrsIds: Set[String]): Future[Map[String, Map[String, Any]]] = Future.successful(Map())
 
-    override def localSensorsSense(id: String): Future[Map[String, Any]] = Future.successful(Map("source"->"10"))
+    override def localSensorsSense(id: String): Future[Map[String, Any]] = {
+      id match {
+        case "1" => Future.successful(Map("source" -> true))
+        case "2" => Future.successful(Map("source" -> false))
+        case "3" => Future.successful(Map("source" -> false))
+      }
+    }
   }
 }

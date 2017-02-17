@@ -7,7 +7,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ExecutionGatewayMockComponent extends ExecutionGatewayComponent{ self: CobaltBasicIncarnation =>
+trait CobaltMockExecutionGatewayComponent extends ExecutionGatewayComponent{ self: CobaltBasicIncarnation =>
   def gateway = new MockGateway
 
   class MockGateway extends Gateway{

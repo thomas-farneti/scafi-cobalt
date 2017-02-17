@@ -7,7 +7,7 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ExecutionMockRepositoryComponent extends ExecutionRepositoryComponent{ self: CobaltBasicIncarnation =>
+trait CobaltMockExecutionRepositoryComponent extends ExecutionRepositoryComponent{ self: CobaltBasicIncarnation =>
   private val repoInstance = new MockRepo
   override def repository = repoInstance
 

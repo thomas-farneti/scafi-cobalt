@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext
 
 trait Environment extends ExecutionApiComponent
   with CobaltExecutionServiceComponent
-  with RedisExecutionRepositoryComponent
+  with CobaltRedisExecutionRepositoryComponent
   with CobaltExecutionGatewayComponent
   with CobaltBasicIncarnation
   with DockerConfig

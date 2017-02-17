@@ -6,7 +6,7 @@ import it.unibo.scafi.incarnations.Incarnation
 /**
   * Created by tfarneti.
   */
-trait ScafiIncarnation extends ExecutionServiceCore with Incarnation with Serializable{
+trait ScafiIncarnation extends ExecutionServiceCore with Incarnation{
   override type LSNS = String
   override type NSNS = String
   override type ID = String

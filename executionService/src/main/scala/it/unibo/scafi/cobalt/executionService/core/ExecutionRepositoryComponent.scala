@@ -12,7 +12,7 @@ trait ExecutionRepositoryComponent { self: ExecutionServiceCore =>
     def get(id: ID):Future[Option[STATE]]
     def set(id: ID, state: STATE):Future[Boolean]
 
-    def mGet(id: Set[ID]): Future[Map[ID,Option[STATE]]]
+    def mGet(id: Set[ID]): Future[Set[STATE]]
   }
 }
 

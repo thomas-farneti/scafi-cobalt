@@ -22,15 +22,12 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
       val stateF = for{
         ctx <- contextF
         p <- Future(println(ctx))
-      } yield StateImpl(deviceId,new HopGradient("source").round(ctx))
-
-      val a = for{
-        state <- stateF
+        state <- Future(StateImpl(deviceId,new HopGradient("source").round(ctx)))
         res <- repository.set(state.id,state)
-      }yield res
+      } yield state
 
-      import scala.concurrent.duration._
-      Await.result(a, 1 second)
+//      import scala.concurrent.duration._
+//      Await.result(stateF, 1 second)
 
       stateF
     }
@@ -43,24 +40,21 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
       val nbrsIdsF = gateway.getAllNbrsIds(deviceId)
       val localSensorsF = gateway.localSensorsSense(deviceId)
 
-      val nbrsSensorsF =  for{
-        nbrsIds <- nbrsIdsF
-        nbrSensors <- gateway.nbrSensorsSense(nbrsIds)
-      }yield nbrSensors
+//      val nbrsSensorsF =  for{
+//        nbrsIds <- nbrsIdsF
+//        nbrSensors <- gateway.nbrSensorsSense(nbrsIds)
+//      }yield nbrSensors
 
-      val lastExportF = repository.get(deviceId).map {
-        case Some(v) => Map(v.id -> v.export)
-        case _ => Map(deviceId -> factory.emptyExport())
-      }
+      val lastExportF = repository.get(deviceId).map( _.map( v => v.id -> v.export).toMap)
+
+      //val nbrExportsF = nbrsIdsF.flatMap( repository.mGet(_)).map( _.values.flatten.map(i => i.id -> i.export).toMap)
+      val nbrExportsF = nbrsIdsF.flatMap( repository.mGet(_)).map( _.map(i => i.id -> i.export).toMap)
 
       val exportsF = for{
-        nbrsIds <- nbrsIdsF
-        nbrsExports <- repository.mGet(nbrsIds).map(_.map(i => i._2 match {
-          case Some(v) => i._1 -> v.export
-          case _ => i._1 -> factory.emptyExport()
-        }).toMap)
-        lastExport <- lastExportF
-      }yield nbrsExports ++ lastExport
+        last <- lastExportF
+        nbrs <- nbrExportsF
+
+      }yield last ++ nbrs
 
       for{
         exports <- exportsF

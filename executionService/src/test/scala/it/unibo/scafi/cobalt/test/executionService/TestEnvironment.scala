@@ -14,3 +14,4 @@ class TestEnvironment(@transient implicit val impExecutionContext: ExecutionCont
   with ScafiMockExecutionGatewayComponent
   with ScafiIncarnation
   with ExecutionContextProvider
+  with Serializable

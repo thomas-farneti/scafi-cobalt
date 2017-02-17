@@ -65,9 +65,9 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
      .mapAsync(1)(data => {
       requestsServed.inc()
-      env.service.execRound(data.deviceId).map(a => a -> data.sensorValue.split(":"))
+      env.service.execRound(data.deviceId).map(a => data.deviceId -> data.sensorValue.split(":"))
     })
     .withAttributes(supervisionStrategy(resumingDecider))
-    .map(s => Routed( s"${s._1.id}", Message(body = ByteString(FieldData(s._1.id,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))
+    .map(s => Routed( s"${s._1}", Message(body = ByteString(FieldData(s._1,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))
     .runWith(Sink.fromSubscriber(connection.publish(exchange = "field_events")))
 }

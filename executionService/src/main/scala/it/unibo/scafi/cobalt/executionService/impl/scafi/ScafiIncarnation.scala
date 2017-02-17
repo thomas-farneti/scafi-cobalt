@@ -11,11 +11,8 @@ trait ScafiIncarnation extends ExecutionServiceCore with Incarnation{
   override type NSNS = String
   override type ID = String
   override type EXECUTION = AggregateProgram
-  override type STATE = StateImpl
 
   implicit val NBR_RANGE_NAME: NSNS = "nbrRange"
-
-  case class StateImpl(id: String,export: ExportImpl) extends State
 
   trait AggregateProgramSpec extends AggregateProgramSpecification with Builtins
 

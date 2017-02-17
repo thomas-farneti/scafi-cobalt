@@ -15,15 +15,15 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 
   class ScafiExecutionService extends ExecutionService{
 
-    override def execRound(deviceId: String): Future[StateImpl] = {
+    override def execRound(deviceId: String): Future[ExportImpl] = {
 
       val contextF = createContext(deviceId)
 
       val stateF = for{
         ctx <- contextF
         p <- Future(println(ctx))
-        state <- Future(StateImpl(deviceId,new HopGradient("source").round(ctx)))
-        res <- repository.set(state.id,state)
+        state <- Future(new HopGradient("source").round(ctx))
+        res <- repository.set(deviceId,state)
       } yield state
 
 //      import scala.concurrent.duration._
@@ -32,9 +32,7 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
       stateF
     }
 
-    override def fetchState(deviceId: String): Future[StateImpl] = {
-      Future.successful(new StateImpl(deviceId,factory.emptyExport()))
-    }
+    override def fetchState(deviceId: String): Future[ExportImpl] = ???
 
     private def createContext(deviceId:String): Future[ContextImpl] = {
       val nbrsIdsF = gateway.getAllNbrsIds(deviceId)
@@ -45,10 +43,10 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 //        nbrSensors <- gateway.nbrSensorsSense(nbrsIds)
 //      }yield nbrSensors
 
-      val lastExportF = repository.get(deviceId).map( _.map( v => v.id -> v.export).toMap)
+      val lastExportF = repository.get(deviceId).map( _.map( v => deviceId -> v).toMap)
 
       //val nbrExportsF = nbrsIdsF.flatMap( repository.mGet(_)).map( _.values.flatten.map(i => i.id -> i.export).toMap)
-      val nbrExportsF = nbrsIdsF.flatMap( repository.mGet(_)).map( _.map(i => i.id -> i.export).toMap)
+      val nbrExportsF = nbrsIdsF.flatMap( repository.mGet(_))
 
       val exportsF = for{
         last <- lastExportF

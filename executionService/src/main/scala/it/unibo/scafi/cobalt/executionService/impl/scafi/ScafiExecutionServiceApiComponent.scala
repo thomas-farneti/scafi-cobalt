@@ -23,7 +23,7 @@ class ScafiExecutionServiceApiComponent(serviceCmp : ScafiExecutionServiceCompon
 
           complete {
             newState.map[ToResponseMarshallable] { s =>
-              s.id+" -> "+s.export
+              s.toString()
             }
           }
         }

@@ -17,25 +17,30 @@ trait RedisExecutionRepositoryComponent extends ExecutionRepositoryComponent { s
 
   class RedisRepository(redisClient: RedisClient) extends Repository{
 
-    implicit val stateSerializer = new ByteStringFormatter[StateImpl] {
-      override def serialize(data: StateImpl): ByteString = {
-        ByteString(data.id +"|"+ data.export)
-      }
-
-      override def deserialize(bs: ByteString): StateImpl = {
-        val r = bs.utf8String.split('|').toList
-        StateImpl(r(0), r(1))
-      }
-    }
-
-    override def get(id: String): Future[Option[StateImpl]] = redisClient.get[StateImpl](id)
-
-    override def set(id: String, state: StateImpl): Future[Boolean] = redisClient.set[StateImpl](id, state)
-
-    override def mGet(id: Set[String]): Future[Set[StateImpl]] = ???
+//    implicit val stateSerializer = new ByteStringFormatter[StateImpl] {
+//      override def serialize(data: StateImpl): ByteString = {
+//        ByteString(data.id +"|"+ data.export)
+//      }
+//
+//      override def deserialize(bs: ByteString): StateImpl = {
+//        val r = bs.utf8String.split('|').toList
+//        StateImpl(r(0), r(1))
+//      }
+//    }
+//
+//    override def get(id: String): Future[Option[StateImpl]] = redisClient.get[StateImpl](id)
+//
+//    override def set(id: String, state: StateImpl): Future[Boolean] = redisClient.set[StateImpl](id, state)
+//
+//    override def mGet(id: Set[String]): Future[Set[StateImpl]] = ???
 //      if(id.isEmpty)
 //        Future.successful(Seq(None))
 //      else
 //        redisClient.mget(id.toSeq: _*)
+    override def get(id: String): Future[Option[String]] = ???
+
+    override def set(id: String, state: String): Future[Boolean] = ???
+
+    override def mGet(id: Set[String]): Future[Map[String, String]] = ???
   }
 }

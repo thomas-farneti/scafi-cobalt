@@ -10,7 +10,4 @@ trait CobaltBasicIncarnation extends ExecutionServiceCore{
   override type EXPORT = String
   override type LSNS = String
   override type NSNS = String
-  override type STATE = StateImpl
-
-  case class StateImpl(id: String,export: String) extends State
 }

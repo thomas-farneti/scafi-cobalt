@@ -43,7 +43,7 @@ class ScafiExecutionServiceSpec extends WordSpec with Matchers {
 //      }
 
       0 to 8 foreach{ i =>
-        println(Await.result(env.service.execRound(""+((i % 3)+1)), 1 second).export)
+        println(Await.result(env.service.execRound(""+((i % 3)+1)), 15 hour))
         //env.service.execRound(""+((i % 3)+1)).map(e => println(e.export.root()))
       }
 

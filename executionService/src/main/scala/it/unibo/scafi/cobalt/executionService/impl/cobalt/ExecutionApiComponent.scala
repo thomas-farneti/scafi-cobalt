@@ -24,7 +24,7 @@ trait ExecutionApiComponent { self: ExecutionApiComponent.dependencies =>
           val state = service.execRound(deviceId)
           complete {
             state.map[ToResponseMarshallable] { s =>
-              s.id+" -> "+s.export
+              s.toString()
             }
           }
         }

@@ -8,12 +8,5 @@ trait ExecutionServiceCore{
   type EXPORT
   type LSNS
   type NSNS
-
-  type STATE <: State
-
-  trait State extends Serializable{
-    val id: ID
-    val export: EXPORT
-  }
 }
 

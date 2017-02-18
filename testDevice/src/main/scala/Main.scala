@@ -55,7 +55,6 @@ object Main extends App{
     .via(pool)
     .runForeach {
       case ( scala.util.Success(response), data) =>
-        // TODO: also check for response status code
         println(s"Result for: $data was successful: $response")
         response.discardEntityBytes() // don't forget this
       case (Failure(ex), data) =>

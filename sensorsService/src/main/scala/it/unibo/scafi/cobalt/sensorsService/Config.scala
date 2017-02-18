@@ -1,4 +1,4 @@
-package it.unibo.scafi.cobalt.sensorManager
+package it.unibo.scafi.cobalt.sensorsService
 
 /**
   * Created by tfarneti.

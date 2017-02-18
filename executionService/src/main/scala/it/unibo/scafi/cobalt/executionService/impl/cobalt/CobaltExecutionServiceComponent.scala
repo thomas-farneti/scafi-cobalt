@@ -25,7 +25,7 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
 
       val lastExportF = repository.get(deviceId).map( _.map( v => deviceId -> v).toMap)
 
-      val nbrExportsF = nbrsF.flatMap( repository.mGet(_))
+      val nbrExportsF = nbrsF.flatMap(repository.mGet(_))
 
       val exportsF = for{
         last <- lastExportF
@@ -42,16 +42,20 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
     }
 
     private def round(deviceId: String,exports:Map[String,String],localSensors: Map[String,Any], nbrSensors: Map[NSNS,Map[ID,Any]]): String ={
-      if(localSensors("source").asInstanceOf[Boolean]){
-        "0"
-      }else{
-        val values = exports.values.map(_.toInt)
-
-        if(values.nonEmpty){
-          ""+(values.min+1)
+      if(localSensors.isDefinedAt("source")){
+        if(localSensors("source").asInstanceOf[Boolean]){
+          "0"
         }else{
-          ""+10000
+          val values = exports.values.map(_.toInt)
+
+          if(values.nonEmpty){
+            ""+(values.min+1)
+          }else{
+            ""+10000
+          }
         }
+      }else{
+        ""+10000
       }
     }
 

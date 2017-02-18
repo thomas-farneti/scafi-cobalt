@@ -44,6 +44,13 @@ trait CobaltExecutionGatewayComponent extends ExecutionGatewayComponent{ self: C
 
     override def nbrSensorsSense(nbrsIds: Set[String]): Future[Map[String, Map[String, Any]]] = ???
 
-    override def localSensorsSense(id: String): Future[Map[String, Any]] = ???
+    override def localSensorsSense(id: String): Future[Map[String, Any]] = {
+      Http().singleRequest(HttpRequest(uri= s"http://$sensorHost:$sensorPort/device/$id")).flatMap { response =>
+        response.status match {
+          case Success(_) => Unmarshal(response.entity).to[Map[String,String]]
+          case _ => Future.failed(new IOException("Epic Fail"))
+        }
+      }
+    }
   }
 }

@@ -41,7 +41,7 @@ class CobalExecutionServiceSpec extends WordSpec with Matchers{
         r9 <- env.service.execRound("3")
       }yield r9
 
-      Await.result(res, 2 seconds) shouldEqual "2"
+      Await.result(res, 2 seconds) shouldBe "2"
     }
   }
 

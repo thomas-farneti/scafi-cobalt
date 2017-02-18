@@ -1,6 +1,7 @@
 package it.unibo.scafi.cobalt.executionService.impl.cobalt
 
 import akka.util.ByteString
+import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.executionService.core.ExecutionRepositoryComponent
 import redis.{ByteStringFormatter, RedisClient}
 
@@ -11,13 +12,13 @@ import scala.concurrent.Future
   */
 
 
-trait CobaltRedisExecutionRepositoryComponent extends ExecutionRepositoryComponent { self: CobaltBasicIncarnation =>
+trait CobaltRedisExecutionRepositoryComponent extends ExecutionRepositoryComponent { self: CobaltBasicIncarnation with ExecutionContextProvider=>
   val redisClient: RedisClient
   override def repository = new RedisRepository(redisClient)
 
   class RedisRepository(redisClient: RedisClient) extends Repository{
 
-    override def get(id: String): Future[Option[String]] = redisClient.get[String(id)
+    override def get(id: String): Future[Option[String]] = redisClient.get[String](id)
 
     override def set(id: String, export: String): Future[Boolean] = redisClient.set(id,export)
 

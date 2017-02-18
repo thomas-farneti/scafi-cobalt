@@ -42,20 +42,16 @@ trait CobaltExecutionServiceComponent extends ExecutionServiceComponent{ self : 
     }
 
     private def round(deviceId: String,exports:Map[String,String],localSensors: Map[String,Any], nbrSensors: Map[NSNS,Map[ID,Any]]): String ={
-      if(localSensors.isDefinedAt("source")){
-        if(localSensors("source").asInstanceOf[Boolean]){
-          "0"
-        }else{
-          val values = exports.values.map(_.toInt)
-
-          if(values.nonEmpty){
-            ""+(values.min+1)
-          }else{
-            ""+10000
-          }
-        }
+      if(localSensors.isDefinedAt("source") && localSensors("source").asInstanceOf[String].toBoolean){
+        "0"
       }else{
-        ""+10000
+        val values = exports.values.map(_.toInt)
+
+        if(values.nonEmpty){
+          ""+(values.min+1)
+        }else{
+          ""+10000
+        }
       }
     }
 

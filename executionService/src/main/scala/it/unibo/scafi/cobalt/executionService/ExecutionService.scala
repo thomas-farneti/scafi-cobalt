@@ -7,9 +7,9 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import io.prometheus.client.Counter
 import io.scalac.amqp._
-import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider}
+import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.{FieldData, SensorData}
+import it.unibo.scafi.cobalt.common.messages.{FieldData, FieldUpdated, SensorData, SensorUpdated}
 import it.unibo.scafi.cobalt.executionService.impl._
 import it.unibo.scafi.cobalt.executionService.impl.cobalt._
 import redis.RedisClient
@@ -23,14 +23,14 @@ trait Environment extends ExecutionApiComponent
   with CobaltRedisExecutionRepositoryComponent
   with CobaltExecutionGatewayComponent
   with CobaltBasicIncarnation
-  with DockerConfig
+  with TestConfig
   with ServicesConfiguration
   with ActorSystemProvider
   with ActorMaterializerProvider
   with ExecutionContextProvider
 
 
-object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
+object ExecutionService extends App with TestConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit def executionContext = system.dispatcher
@@ -56,18 +56,19 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
 
   connection.exchangeDeclare(Exchange("field_events", Topic, durable = true))
   connection.queueDeclare(Queue("field_events.test.queue",durable = true)).onComplete(_=>
-    connection.queueBind("field_events.test.queue","field_events","*"))
+  connection.queueBind("field_events.test.queue","field_events","*"))
 
   import akka.stream.ActorAttributes.supervisionStrategy
   import akka.stream.Supervision.resumingDecider
 
-  Source.fromPublisher(connection.consume(queue = "sensor_events.executionService.queue"))
-    .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-     .mapAsync(1)(data => {
-      requestsServed.inc()
-      env.service.execRound(data.deviceId).map(a => data.deviceId -> data.sensorValue.split(":"))
-    })
-    .withAttributes(supervisionStrategy(resumingDecider))
-    .map(s => Routed( s"${s._1}", Message(body = ByteString(FieldData(s._1,s._2(0).toDouble,s._2(1).toDouble).toJson.compactPrint))))
-    .runWith(Sink.fromSubscriber(connection.publish(exchange = "field_events")))
+  val pub = new RabbitPublisher(connection)
+
+  pub.sourceFromRabbit[SensorUpdated]("sensor_events.executionService.queue")
+   .mapAsync(1)(data => {
+    requestsServed.inc()
+    env.service.execRound(data.deviceId).map(a => data.deviceId -> a)
+  })
+  .withAttributes(supervisionStrategy(resumingDecider))
+  .map(s => FieldUpdated(s._1, s._1, s._1, s._2))
+  .runWith(pub.sinkToRabbit("field_events", "SensorUpdated"))
 }

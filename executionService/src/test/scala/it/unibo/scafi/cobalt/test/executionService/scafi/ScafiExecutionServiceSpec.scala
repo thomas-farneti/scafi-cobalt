@@ -23,20 +23,23 @@ class ScafiExecutionServiceSpec extends WordSpec with Matchers {
 
 
       val res = for {
-        r1 <- env.service.execRound("1")
-        r2 <- env.service.execRound("2")
-        r3 <- env.service.execRound("3")
-        r4 <- env.service.execRound("1")
-        r5 <- env.service.execRound("2")
-        r6 <- env.service.execRound("3")
-      }yield r6
+        _ <- env.service.execRound("1")
+        _ <- env.service.execRound("2")
+        _ <- env.service.execRound("3")
+        _ <- env.service.execRound("1")
+        _ <- env.service.execRound("2")
+        _ <- env.service.execRound("3")
+        _ <- env.service.execRound("1")
+        _ <- env.service.execRound("2")
+        r9 <- env.service.execRound("3")
+      }yield r9
 
 //      0 to 8 foreach{ i =>
 //        println(Await.result(env.service.execRound(""+((i % 3)+1)), 15 hour))
 //        //env.service.execRound(""+((i % 3)+1)).map(e => println(e.export.root()))
 //      }
 
-      Await.result(res, 10 hours)
+      Await.result(res, 10 hours).root().toString shouldBe "2"
     }
   }
 }

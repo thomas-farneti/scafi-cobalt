@@ -25,9 +25,9 @@ trait CobaltMockExecutionGatewayComponent extends ExecutionGatewayComponent{ sel
 
     override def localSensorsSense(id: String): Future[Map[String, Any]] = {
       id match {
-        case "1" => Future.successful(Map("source" -> true))
-        case "2" => Future.successful(Map("source" -> false))
-        case "3" => Future.successful(Map("source" -> false))
+        case "1" => Future.successful(Map("source" -> "true"))
+        case "2" => Future.successful(Map("source" -> "false"))
+        case "3" => Future.successful(Map("source" -> "false"))
       }
     }
   }

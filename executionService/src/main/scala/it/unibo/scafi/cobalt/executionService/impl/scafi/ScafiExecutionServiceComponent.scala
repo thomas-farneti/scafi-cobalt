@@ -20,13 +20,10 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 
       val stateF = for{
         ctx <- contextF
-        p <- Future(println(ctx))
+        //p <- Future(println(ctx))
         state <- Future(new HopGradient("source").round(ctx))
         res <- repository.set(deviceId,state)
       } yield state
-
-//      import scala.concurrent.duration._
-//      Await.result(stateF, 1 second)
 
       stateF
     }

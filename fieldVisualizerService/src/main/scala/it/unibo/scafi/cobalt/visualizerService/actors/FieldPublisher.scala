@@ -20,7 +20,7 @@ import akka.actor.{ActorLogging, ActorRef, Props, Stash}
 import akka.routing.{ActorRefRoutee, AddRoutee, RemoveRoutee}
 import akka.stream.actor.ActorPublisher
 import it.unibo.scafi.cobalt.common.domain.BoundingBox
-import it.unibo.scafi.cobalt.common.messages.FieldData
+import it.unibo.scafi.cobalt.common.messages.{FieldData, FieldUpdated}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import spray.json._
 
@@ -72,12 +72,12 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
 
     // receive new stats, add them to the queue, and quickly
     // exit.
-    case data: FieldData=>
+    case data: FieldUpdated=>
       // remove the oldest one from the queue and add a new one
       log.info("RecivedData")
       if (queue.size == MaxBufferSize) queue.dequeue()
       //if (tileIds.contains(data.tileId)) {
-        queue += data//Vehicle(data.id,data.time, data.latitude, data.longitude, data.heading, data.route_id, data.run_id, data.seconds_since_report)
+        queue += FieldData("",1,1)//Vehicle(data.id,data.time, data.latitude, data.longitude, data.heading, data.route_id, data.run_id, data.seconds_since_report)
 
         if (!queueUpdated) {
           queueUpdated = true

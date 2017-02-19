@@ -13,7 +13,7 @@ trait DomainRepositoryComponent {
   trait Repository{
     def getNbrsSpatial(deviceId: String): Future[Set[String]]
 
-    def updatePosition(deviceId: String, latitude: String, longitude: String) : Future[Boolean]
+    def updatePosition(deviceId: String, latitude: Double, longitude: Double) : Future[Boolean]
 
     def getNeighborsIdsForDevice(deviceId: String): Future[Set[String]]
 
@@ -46,7 +46,7 @@ trait DomainRepositoryMockComponent extends DomainRepositoryComponent{
       Future.failed(new Exception)
     }
 
-    override def updatePosition(deviceId: String, latitude: String, longitude: String): Future[Boolean] = ???
+    override def updatePosition(deviceId: String, latitude: Double, longitude: Double): Future[Boolean] = ???
 
     override def getNbrsSpatial(deviceId: String): Future[Set[String]] = ???
 

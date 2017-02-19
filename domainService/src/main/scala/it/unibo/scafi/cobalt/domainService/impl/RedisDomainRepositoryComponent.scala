@@ -31,7 +31,7 @@ trait RedisDomainRepositoryComponent extends DomainRepositoryComponent{ self : E
       }
     }
 
-    override def updatePosition(deviceId: String, latitude: String, longitude: String): Future[Boolean] = redisClient.geoAdd("netSvc:spatial", latitude.toDouble, longitude.toDouble, deviceId).map(_ => true)
+    override def updatePosition(deviceId: String, latitude: Double, longitude: Double): Future[Boolean] = redisClient.geoAdd("netSvc:spatial", latitude, longitude, deviceId).map(_ => true)
 
     override def getDevicesByBoundingBox(boundingBox: BoundingBox): Future[Seq[String]] = {
       redisClient.geoAdd("temp", boundingBox.leftTop.lat, boundingBox.leftTop.lon, "leftTop")

@@ -1,5 +1,7 @@
 package it.unibo.scafi.cobalt.executionService
 
+import java.util.UUID
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -9,7 +11,7 @@ import io.prometheus.client.Counter
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.{FieldData, FieldUpdated, SensorData, SensorUpdated}
+import it.unibo.scafi.cobalt.common.messages.{DeviceData, DeviceSensorsUpdated, FieldData, FieldUpdated}
 import it.unibo.scafi.cobalt.executionService.impl._
 import it.unibo.scafi.cobalt.executionService.impl.cobalt._
 import redis.RedisClient
@@ -63,12 +65,12 @@ object ExecutionService extends App with TestConfig with AkkaHttpConfig with Red
 
   val pub = new RabbitPublisher(connection)
 
-  pub.sourceFromRabbit[SensorUpdated]("sensor_events.executionService.queue")
+  pub.sourceFromRabbit[DeviceSensorsUpdated]("sensor_events.executionService.queue")
    .mapAsync(1)(data => {
     requestsServed.inc()
-    env.service.execRound(data.deviceId).map(a => data.deviceId -> a)
+    env.service.execRound(data.deviceId).map(a => data -> a)
   })
   .withAttributes(supervisionStrategy(resumingDecider))
-  .map(s => FieldUpdated(s._1, s._1, s._1, s._2))
-  .runWith(pub.sinkToRabbit("field_events", "SensorUpdated"))
+  .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",s._1.deviceId,s._1.lat,s._1.lon,s._2))
+  .runWith(pub.sinkToRabbit("field_events", "FieldUpdated"))
 }

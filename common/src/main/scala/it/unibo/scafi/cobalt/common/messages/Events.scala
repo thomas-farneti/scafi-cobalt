@@ -8,6 +8,6 @@ trait Event {
   val topic: String
 }
 
-case class SensorUpdated(id:String, topic:String, deviceId:String, sensorName:String, sensorValue:String) extends Event
+case class DeviceSensorsUpdated(id:String, topic:String, deviceId:String, lat:Double, lon:Double, sensorsData: Map[String,String]) extends Event
 
-case class FieldUpdated(id:String, topic:String, deviceId:String, value:String) extends Event
+case class FieldUpdated(id:String, topic:String, deviceId:String,lat:Double,lon:Double, value:String) extends Event

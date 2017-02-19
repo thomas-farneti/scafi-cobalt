@@ -1,5 +1,7 @@
 package it.unibo.scafi.cobalt.ingestionService.impl
 
+import java.util.UUID
+
 import akka.Done
 import akka.event.Logging
 import akka.http.scaladsl.common.{EntityStreamingSupport, JsonEntityStreamingSupport}
@@ -13,7 +15,7 @@ import akka.stream.scaladsl.Sink
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
 import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.{SensorData, SensorUpdated}
+import it.unibo.scafi.cobalt.common.messages.{DeviceData, DeviceSensorsUpdated}
 import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
 import it.unibo.scafi.cobalt.ingestionService.core.IngestionServiceComponent
 
@@ -47,24 +49,23 @@ class IngestionApiComponent(publisher : RabbitPublisher) { self: IngestionApiCom
     }
   }
 
-  val persistData: Sink[SensorData, Future[Done]] = Sink.foreach[SensorData](d => service.updateSensorValue(d.deviceId,d.sensorName,d.sensorValue))
+  val persistData: Sink[DeviceData, Future[Done]] = Sink.foreach[DeviceData](d => d.sensorsData.foreach(s =>service.updateSensorValue(d.deviceId,s._1,s._2)))
 
-  def sensorsDataStreaming = path("sensorData"){
+  def sensorsDataStreaming = path("deviceDataStream"){
     post{
-      entity(asSourceOf[SensorData]){data =>
+      entity(asSourceOf[DeviceData]){ data =>
         requests.inc()
-        connectedDevices.inc()
 
-        data
-          .alsoTo(persistData)
-          .map(d => SensorUpdated(d.id,d.deviceId+"."+d.sensorName,d.deviceId,d.sensorName,d.sensorValue))
-          .log("before-publish")
-          .withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel))
-          .runWith(publisher.sinkToRabbit("sensor_events", "SensorUpdated"))
+        val measurementsSubmitted = data.
+        alsoTo(persistData).
+        map(d => DeviceSensorsUpdated(UUID.randomUUID().toString,"DeviceSensorsUpdated",d.deviceId,d.lat,d.lon,d.sensorsData)).
+        log("before-publish").
+        withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel)).
+        alsoTo(publisher.sinkToRabbit("sensor_events", "DeviceSensorsUpdated")).
+        runFold(0) { (cnt, _) => cnt + 1 }
 
         complete{
-          connectedDevices.dec()
-          OK
+          measurementsSubmitted.map[ToResponseMarshallable](n => s"Processed $n metrics")
         }
       }
     }

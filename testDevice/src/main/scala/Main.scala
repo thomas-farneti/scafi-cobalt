@@ -1,4 +1,5 @@
 import java.nio.file.{Path, Paths}
+import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.event.Logging
@@ -13,7 +14,7 @@ import akka.stream.scaladsl.{FileIO, Framing, Source}
 import akka.stream.{ActorMaterializer, ThrottleMode}
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.SensorData
+import it.unibo.scafi.cobalt.common.messages.DeviceData
 
 import scala.concurrent.duration._
 import scala.util.Failure
@@ -29,7 +30,7 @@ object Main extends App{
 
   val r = new scala.util.Random
 
-  val pool = Http().cachedHostConnectionPool[SensorData]("localhost",8080)
+  val pool = Http().cachedHostConnectionPool[DeviceData]("localhost",8080)
   //val lines = scala.io.Source.fromFile("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt").
   var cont = 0
 
@@ -42,11 +43,11 @@ object Main extends App{
     .mapAsync(1){ l =>
       val cols = l.split("\t")
 
-      val data = SensorData(cont.toString, cont.toString, "gps", s"${cols(1)}:${cols(3)}")
+      val data = DeviceData(UUID.randomUUID().toString, cont.toString,cols(1).toDouble,cols(3).toDouble,Map("source"-> (cont==0).toString))
       cont = (cont + 1) % 500
 
       Marshal(data).to[RequestEntity].map{ e =>
-        HttpRequest(method=HttpMethods.POST, uri = Uri("/sensorData"), entity= e) -> data
+        HttpRequest(method=HttpMethods.POST, uri = Uri("/deviceDataStream"), entity= e) -> data
       }
     }
     .throttle(1,50 milliseconds,1,ThrottleMode.shaping)

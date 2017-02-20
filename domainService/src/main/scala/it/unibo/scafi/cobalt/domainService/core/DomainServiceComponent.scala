@@ -1,5 +1,7 @@
 package it.unibo.scafi.cobalt.domainService.core
 
+import it.unibo.scafi.cobalt.common.domain.BoundingBox
+
 import scala.concurrent.Future
 
 /**
@@ -15,9 +17,11 @@ trait DomainServiceComponent { self:DomainRepositoryComponent =>
 
     def removeNeighborForDevice(deviceId: String, nbrId: String): Future[String] = repository.removeNeighborForDevice(deviceId,nbrId)
 
-    def updatePosition(deviceId: String, latitude:String, longitude:String) : Future[Boolean] = repository.updatePosition(deviceId, latitude, longitude)
+    def updatePosition(deviceId: String, latitude:Double, longitude:Double) : Future[Boolean] = repository.updatePosition(deviceId, latitude, longitude)
 
     def getNbrsSpatial(deviceId: String): Future[Set[String]] = repository.getNbrsSpatial(deviceId)
+
+    def getDevicesByBoundingBox(boundingBox: BoundingBox): Future[Seq[String]] = repository.getDevicesByBoundingBox(boundingBox)
   }
 }
 

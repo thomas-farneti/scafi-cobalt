@@ -23,7 +23,8 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import io.scalac.amqp._
-import it.unibo.scafi.cobalt.common.messages.FieldData
+import it.unibo.scafi.cobalt.common.infrastructure.RabbitPublisher
+import it.unibo.scafi.cobalt.common.messages.{FieldData, FieldUpdated, DeviceSensorsUpdated}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
 import it.unibo.scafi.cobalt.visualizerService.DockerConfig
 import spray.json._
@@ -40,13 +41,14 @@ class FieldDatasFromRabbitActor(router: ActorRef) extends Actor with ActorLoggin
   implicit val ec = context.system.dispatcher
 
   val connection = Connection(config)
-  val qName = UUID.randomUUID().toString
+  val qName = "field_events.visualizer.queue"//UUID.randomUUID().toString
 
   connection.queueDeclare(Queue(qName)).onComplete( _ =>
   connection.queueBind(qName,"field_events","*"))
 
-  Source.fromPublisher(connection.consume(qName))
-    .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[FieldData])
+  val pub = new RabbitPublisher(connection)
+
+  pub.sourceFromRabbit[FieldUpdated](qName)
       .runForeach(data => router ! data)
 
 

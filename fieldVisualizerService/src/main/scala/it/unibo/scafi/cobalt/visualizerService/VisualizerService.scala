@@ -6,21 +6,14 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, Uri}
-import akka.http.scaladsl.server.Directives._
-import akka.stream.{ActorMaterializer, FlowShape}
+import akka.stream.scaladsl.GraphDSL.Implicits._
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Source}
+import akka.stream.{ActorMaterializer, FlowShape}
+import it.unibo.scafi.cobalt.common.domain.{BoundingBox, LatLon}
 import it.unibo.scafi.cobalt.visualizerService.actors.{FieldDatasFromRabbitActor, FieldPublisher, RouterActor}
-import GraphDSL.Implicits._
-import io.scalac.amqp.{Connection, Queue}
 
-import scala.util.{Failure, Success}
-/**
-  * Created by tfarneti.
-  */
 
-case class LatLon(lat: Float, lon: Float)
 
-case class BoundingBox(leftTop: LatLon, rightBotom: LatLon)
 
 object VisualizerService extends App with RestService with DockerConfig with AkkaHttpConfig{
   implicit val system = ActorSystem("service-api-http")
@@ -87,7 +80,7 @@ object VisualizerService extends App with RestService with DockerConfig with Akk
   def toBoundingBox(bbox: String): BoundingBox = {
     val bboxCoords: Array[String] = bbox.split(",")
     val boundingBox: BoundingBox =
-      new BoundingBox(LatLon(bboxCoords(0).toFloat, bboxCoords(1).toFloat), LatLon(bboxCoords(2).toFloat, bboxCoords(3).toFloat))
+      BoundingBox(LatLon(bboxCoords(0).toFloat, bboxCoords(1).toFloat), LatLon(bboxCoords(2).toFloat, bboxCoords(3).toFloat))
     boundingBox
   }
 }

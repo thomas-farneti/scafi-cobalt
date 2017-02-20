@@ -3,9 +3,10 @@ package it.unibo.scafi.cobalt.domainService.impl
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
+import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
-import io.prometheus.client.{CollectorRegistry, Gauge}
-import it.unibo.scafi.cobalt.common.ExecutionContextProvider
+import it.unibo.scafi.cobalt.common.domain.{BoundingBox, LatLon}
+import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
 import it.unibo.scafi.cobalt.common.metrics.MetricsEndpoint
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
 import spray.json.DefaultJsonProtocol
@@ -36,8 +37,18 @@ class DomainApiComponent extends DefaultJsonProtocol { self: DomainApiComponent.
       get{
         complete(service.getNbrsSpatial(deviceId))
       }
-    }~metricsEndpoint.metricsRoute
+    }~getDevicesByBB ~metricsEndpoint.metricsRoute
   }
+
+  def getDevicesByBB =
+    path("bb") {
+      parameters('lat1.as[Double], 'lon1.as[Double], 'lat2.as[Double],'lon2.as[Double]) { (lat1, lon1, lat2, lon2) =>
+        val bb = BoundingBox(LatLon(lat1,lon1),LatLon(lat2,lon2))
+        val devices = service.getDevicesByBoundingBox(bb)
+
+        complete(devices)
+      }
+    }
 }
 
 object DomainApiComponent{

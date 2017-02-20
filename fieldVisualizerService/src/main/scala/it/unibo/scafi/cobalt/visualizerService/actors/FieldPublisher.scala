@@ -19,9 +19,9 @@ package it.unibo.scafi.cobalt.visualizerService.actors
 import akka.actor.{ActorLogging, ActorRef, Props, Stash}
 import akka.routing.{ActorRefRoutee, AddRoutee, RemoveRoutee}
 import akka.stream.actor.ActorPublisher
-import it.unibo.scafi.cobalt.common.messages.FieldData
+import it.unibo.scafi.cobalt.common.domain.BoundingBox
+import it.unibo.scafi.cobalt.common.messages.{FieldData, FieldUpdated}
 import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.visualizerService.BoundingBox
 import spray.json._
 
 import scala.annotation.tailrec
@@ -51,9 +51,7 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
     router ! AddRoutee(ActorRefRoutee(self))
   }
 
-  // cleanly remove this actor from the router. To
-  // make sure our custom router only keeps track of
-  // alive actors.
+  // custom router only keeps track of alive actors
   override def postStop(): Unit = {
     log.info("Publisher postStop: removing self from routee")
     router ! RemoveRoutee(ActorRefRoutee(self))
@@ -74,12 +72,12 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
 
     // receive new stats, add them to the queue, and quickly
     // exit.
-    case data: FieldData=>
+    case data: FieldUpdated=>
       // remove the oldest one from the queue and add a new one
       log.info("RecivedData")
       if (queue.size == MaxBufferSize) queue.dequeue()
       //if (tileIds.contains(data.tileId)) {
-        queue += data//Vehicle(data.id,data.time, data.latitude, data.longitude, data.heading, data.route_id, data.run_id, data.seconds_since_report)
+        queue += FieldData(data.deviceId,data.lat,data.lon,data.value.toDouble)
 
         if (!queueUpdated) {
           queueUpdated = true
@@ -126,9 +124,7 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
     } else if (totalDemand > 0 && queue.size > 0) {
 
       val fieldData = queue.dequeue()
-
-      //JacksMapper.mapper.enable(SerializationFeature.INDENT_OUTPUT)
-      val fieldDataAsString = fieldData.toJson.compactPrint//JacksMapper.writeValueAsString(vehicle)
+      val fieldDataAsString = fieldData.toJson.compactPrint
 
       onNext(fieldDataAsString)
       deliver()

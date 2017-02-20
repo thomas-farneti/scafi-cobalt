@@ -1,27 +1,24 @@
 package it.unibo.scafi.cobalt.domainService
 
 import akka.actor.ActorSystem
+import akka.event.Logging
 import akka.event.Logging.InfoLevel
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives.logRequestResult
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
-import akka.util.ByteString
+import akka.stream.{ActorMaterializer, Attributes}
 import io.scalac.amqp.{Connection, Queue}
-import it.unibo.scafi.cobalt.common.ExecutionContextProvider
-import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.SensorData
+import it.unibo.scafi.cobalt.common.infrastructure.{ExecutionContextProvider, RabbitPublisher}
+import it.unibo.scafi.cobalt.common.messages.DeviceSensorsUpdated
 import it.unibo.scafi.cobalt.domainService.core.DomainServiceComponent
 import it.unibo.scafi.cobalt.domainService.impl.{DomainApiComponent, RedisDomainRepositoryComponent}
 import redis.RedisClient
-import spray.json._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * Created by tfarneti.
   */
-object DomainService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
+object DomainService extends App with TestConfig with AkkaHttpConfig with RedisConfiguration{
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
@@ -39,11 +36,18 @@ object DomainService extends App with DockerConfig with AkkaHttpConfig with Redi
 
   val connection = Connection(config)
   connection.queueDeclare(Queue("sensor_events.domainMicroservice.queue",durable = true)).onComplete(_=>
-  connection.queueBind("sensor_events.domainMicroservice.queue","sensor_events","*.gps"))
+  connection.queueBind("sensor_events.domainMicroservice.queue","sensor_events","*"))
 
-  Source.fromPublisher(connection.consume(queue = "sensor_events.domainMicroservice.queue"))
-    .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
-    .map(m => m.deviceId -> m.sensorValue.split(":"))
-    .alsoTo(Sink.foreach(m => println(m._1)))
-    .runForeach(m => env.service.updatePosition(m._1,m._2(0),m._2(1)))
+  val pub = new RabbitPublisher(connection)
+
+  pub.sourceFromRabbit[DeviceSensorsUpdated]("sensor_events.domainMicroservice.queue")
+  .log("before-publish")
+  .withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel))
+  .runForeach(m => env.service.updatePosition(m.deviceId,m.lat,m.lon))
+
+//  Source.fromPublisher(connection.consume(queue = "sensor_events.domainMicroservice.queue"))
+//    .map(m => ByteString.fromArray(m.message.body.toArray).utf8String.parseJson.convertTo[SensorData])
+//    .map(m => m.deviceId -> m.sensorValue.split(":"))
+//    .alsoTo(Sink.foreach(m => println(m._1)))
+//    .runForeach(m => env.service.updatePosition(m._1,m._2(0),m._2(1)))
 }

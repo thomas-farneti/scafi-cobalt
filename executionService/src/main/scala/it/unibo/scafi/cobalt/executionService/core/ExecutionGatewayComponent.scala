@@ -5,24 +5,14 @@ import scala.concurrent.Future
 /**
   * Created by tfarneti.
   */
-trait ExecutionGatewayComponent {
+trait ExecutionGatewayComponent { self: ExecutionServiceCore =>
   def gateway : Gateway
 
   trait Gateway{
-    def getAllNbrsIds(id: String): Future[Set[String]]
-    def senseAll(id:String) : Future[Map[String,String]]
-    def sense(id:String, sensorName:String): Future[String]
+    def getAllNbrsIds(id: ID): Future[Set[ID]]
+    def sense(id:ID, sensorName: LSNS): Future[Any]
+    def localSensorsSense(id:ID) : Future[Map[LSNS,Any]]
+    def nbrSensorsSense(nbrsIds: Set[ID]): Future[Map[NSNS,Map[ID,Any]]]
   }
 }
 
-trait ExecutionGatewayMockComponent extends ExecutionGatewayComponent{
-  def gateway = new MockGateway
-
-  class MockGateway extends Gateway{
-    override def getAllNbrsIds(id: String): Future[Set[String]] = Future.successful(Set("2","3"))
-
-    override def senseAll(id: String): Future[Map[String, String]] = Future.successful(Map("source"->"true"))
-
-    override def sense(id: String, sensorName: String): Future[String] = Future.successful("10")
-  }
-}

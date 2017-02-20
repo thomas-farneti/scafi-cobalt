@@ -56,14 +56,14 @@ lazy val root = (project in file(".")).
     name := "scafi-cobalt",
     version := "0.1.0"
   ).
-  aggregate(common,domainService,executionService,sensorManagerMicroService,ingestionService,fieldVisualizerService)
+  aggregate(common,domainService,executionService,sensorsService,ingestionService,fieldVisualizerService)
 
 lazy val common = project.
   settings(commonSettings: _*).
   settings(
     name := "core",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,sprayJson,prometheusClient,prometheusCommon,prometheusHotSpot)
+    libraryDependencies ++= Seq(scafi_core,sprayJson,prometheusClient,prometheusCommon,prometheusHotSpot,akkaStream,akkaActor,reactiveRabbit)
   )
 
 lazy val domainService = project.
@@ -144,7 +144,7 @@ lazy val testDevice = project.
   )
   .enablePlugins(JavaAppPackaging)
 
-lazy val sensorManagerMicroService = project.
+lazy val sensorsService = project.
   dependsOn(common).
   settings(commonSettings: _*).
   settings(

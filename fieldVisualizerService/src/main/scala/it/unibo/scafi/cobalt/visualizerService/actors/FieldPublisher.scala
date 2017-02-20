@@ -77,7 +77,7 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
       log.info("RecivedData")
       if (queue.size == MaxBufferSize) queue.dequeue()
       //if (tileIds.contains(data.tileId)) {
-        queue += FieldData("",1,1)//Vehicle(data.id,data.time, data.latitude, data.longitude, data.heading, data.route_id, data.run_id, data.seconds_since_report)
+        queue += FieldData(data.deviceId,data.lat,data.lon,data.value.toDouble)
 
         if (!queueUpdated) {
           queueUpdated = true
@@ -124,9 +124,7 @@ class FieldPublisher(router: ActorRef) extends ActorPublisher[String] with Actor
     } else if (totalDemand > 0 && queue.size > 0) {
 
       val fieldData = queue.dequeue()
-
-      //JacksMapper.mapper.enable(SerializationFeature.INDENT_OUTPUT)
-      val fieldDataAsString = fieldData.toJson.compactPrint//JacksMapper.writeValueAsString(vehicle)
+      val fieldDataAsString = fieldData.toJson.compactPrint
 
       onNext(fieldDataAsString)
       deliver()

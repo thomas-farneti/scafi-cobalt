@@ -54,7 +54,7 @@ object ExecutionService extends App with TestConfig with AkkaHttpConfig with Red
 
   val connection = Connection(config)
   connection.queueDeclare(Queue("sensor_events.executionService.queue",durable = true)).onComplete(_=>
-  connection.queueBind("sensor_events.executionService.queue","sensor_events","*.gps"))
+  connection.queueBind("sensor_events.executionService.queue","sensor_events","*"))
 
   connection.exchangeDeclare(Exchange("field_events", Topic, durable = true))
   connection.queueDeclare(Queue("field_events.test.queue",durable = true)).onComplete(_=>

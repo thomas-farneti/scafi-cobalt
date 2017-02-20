@@ -4,6 +4,7 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.javadsl.model.HttpEntities
+import akka.http.javadsl.settings.ConnectionPoolSettings
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import spray.json._
@@ -20,64 +21,43 @@ import scala.concurrent.duration._
 import scala.util.Failure
 
 
-
-object Main extends App{
+object Main extends App {
   implicit val system = ActorSystem()
-  implicit def ec =  system.dispatcher
+
+  implicit def ec = system.dispatcher
+
   implicit val materializer = ActorMaterializer()
 
   private val log = Logging(system, getClass.getName)
 
   val r = new scala.util.Random
 
-  val pool = Http().cachedHostConnectionPool[DeviceData]("localhost",8080)
-  //val lines = scala.io.Source.fromFile("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt").
+  val pool = Http().cachedHostConnectionPool[DeviceData]("localhost", 8080)
+  //val lines = scala.io.Source.fromFile("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt").getLines().toArray
   var cont = 0
 
 
-
-
-  FileIO.fromPath(Paths.get("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt")).
-    via(Framing.delimiter(ByteString.fromString(System.lineSeparator()), 512, allowTruncation = true)).
-    map(_.utf8String)
-    .mapAsync(1){ l =>
+  //    FileIO.fromPath(Paths.get("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt")).
+  //    via(Framing.delimiter(ByteString.fromString(System.lineSeparator()), 512, allowTruncation = true)).
+  //    map(_.utf8String)
+  Source.cycle(() => scala.io.Source.fromFile("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt").getLines())
+    .mapAsync(1) { l =>
       val cols = l.split("\t")
 
-      val data = DeviceData(UUID.randomUUID().toString, cont.toString,cols(1).toDouble,cols(3).toDouble,Map("source"-> (cont==0).toString))
-      cont = (cont + 1) % 500
+      val data = DeviceData(UUID.randomUUID().toString, cont.toString, cols(1).toDouble, cols(3).toDouble, Map("source" -> (cont == 0).toString))
+      cont = (cont + 1) % 1000
 
-      Marshal(data).to[RequestEntity].map{ e =>
-        HttpRequest(method=HttpMethods.POST, uri = Uri("/deviceDataStream"), entity= e) -> data
+      Marshal(data).to[RequestEntity].map { e =>
+        HttpRequest(method = HttpMethods.POST, uri = Uri("/deviceDataStream"), entity = e) -> data
       }
     }
-    .throttle(1,50 milliseconds,1,ThrottleMode.shaping)
+    .throttle(1, 15 milliseconds, 1, ThrottleMode.shaping)
     .via(pool)
     .runForeach {
-      case ( scala.util.Success(response), data) =>
-        println(s"Result for: $data was successful: $response")
+      case (scala.util.Success(response), data) =>
+        //println(s"Result for: $data was successful: $response")
         response.discardEntityBytes() // don't forget this
       case (Failure(ex), data) =>
         println(s"$data failed with $ex")
     }
-
-//  Source.single(1)
-//    .mapAsync(1){ i =>
-//      val lat = "44."+ (10328 + r.nextInt(( 147697 - 10328) + 1))
-//      val lon = "12."+(159167 + r.nextInt(( 281476 - 159167) + 1))
-//      val data = SensorData(i.toString, i.toString, "gps", s"$lat:$lon")
-//
-//      Marshal(data).to[RequestEntity].map{ e =>
-//        HttpRequest(method=HttpMethods.POST, uri = Uri("/sensorData"), entity= e) -> data
-//      }
-//    }
-//    .throttle(1,1.second,1,ThrottleMode.shaping)
-//    .via(pool)
-//    .runForeach {
-//      case ( scala.util.Success(response), data) =>
-//        println(s"Result for: $data was successful: $response")
-//        response.discardEntityBytes() // don't forget this
-//      case (Failure(ex), data) =>
-//        println(s"$data failed with $ex")
-//    }
-
 }

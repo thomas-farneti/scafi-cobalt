@@ -80,7 +80,7 @@ object VisualizerService extends App with RestService with DockerConfig with Akk
   def toBoundingBox(bbox: String): BoundingBox = {
     val bboxCoords: Array[String] = bbox.split(",")
     val boundingBox: BoundingBox =
-      new BoundingBox(LatLon(bboxCoords(0).toFloat, bboxCoords(1).toFloat), LatLon(bboxCoords(2).toFloat, bboxCoords(3).toFloat))
+      BoundingBox(LatLon(bboxCoords(0).toFloat, bboxCoords(1).toFloat), LatLon(bboxCoords(2).toFloat, bboxCoords(3).toFloat))
     boundingBox
   }
 }

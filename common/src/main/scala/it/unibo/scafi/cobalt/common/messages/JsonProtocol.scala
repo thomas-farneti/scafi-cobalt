@@ -7,10 +7,10 @@ import spray.json._
   */
 case class DeviceData(messageId: String, deviceId:String,lat: Double, lon:Double, sensorsData: Map[String,String])
 
-case class FieldData(id:String, latitude: Double, longitude: Double)
+case class FieldData(id:String, latitude: Double, longitude: Double, value: Double)
 
 
 object JsonProtocol extends DefaultJsonProtocol {
   implicit val deviceDataFormat: RootJsonFormat[DeviceData] = jsonFormat5(DeviceData)
-  implicit val fieldDataFormat: RootJsonFormat[FieldData] = jsonFormat3(FieldData)
+  implicit val fieldDataFormat: RootJsonFormat[FieldData] = jsonFormat4(FieldData)
 }

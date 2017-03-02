@@ -5,17 +5,14 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
-import akka.util.ByteString
+import akka.stream.scaladsl.Sink
 import io.prometheus.client.Counter
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
-import it.unibo.scafi.cobalt.common.messages.JsonProtocol._
-import it.unibo.scafi.cobalt.common.messages.{DeviceData, DeviceSensorsUpdated, FieldData, FieldUpdated}
+import it.unibo.scafi.cobalt.common.messages.{DeviceSensorsUpdated, FieldUpdated}
 import it.unibo.scafi.cobalt.executionService.impl._
 import it.unibo.scafi.cobalt.executionService.impl.cobalt._
 import redis.RedisClient
-import spray.json._
 
 import scala.concurrent.ExecutionContext
 
@@ -25,14 +22,14 @@ trait Environment extends ExecutionApiComponent
   with CobaltRedisExecutionRepositoryComponent
   with CobaltExecutionGatewayComponent
   with CobaltBasicIncarnation
-  with TestConfig
+  with DockerConfig
   with ServicesConfiguration
   with ActorSystemProvider
   with ActorMaterializerProvider
   with ExecutionContextProvider
 
 
-object ExecutionService extends App with TestConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
+object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit def executionContext = system.dispatcher
@@ -64,6 +61,7 @@ object ExecutionService extends App with TestConfig with AkkaHttpConfig with Red
   import akka.stream.Supervision.resumingDecider
 
   val pub = new RabbitPublisher(connection)
+  val processed: Counter = Counter.build().name("execution_messageProcessed").help("Total requests.").register()
 
   pub.sourceFromRabbit[DeviceSensorsUpdated]("sensor_events.executionService.queue")
    .mapAsync(1)(data => {
@@ -72,5 +70,6 @@ object ExecutionService extends App with TestConfig with AkkaHttpConfig with Red
   })
   .withAttributes(supervisionStrategy(resumingDecider))
   .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",s._1.deviceId,s._1.lat,s._1.lon,s._2))
+  .alsoTo(Sink.foreach(_ => processed.inc()))
   .runWith(pub.sinkToRabbit("field_events", "FieldUpdated"))
 }

@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 /**
   * Created by tfarneti.
   */
-object IngestionMicroService extends App with TestConfig with RedisConfiguration with AkkaHttpConfig{
+object IngestionMicroService extends App with DockerConfig with RedisConfiguration with AkkaHttpConfig{
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit def dispatcher: ExecutionContextExecutor = actorSystem.dispatcher

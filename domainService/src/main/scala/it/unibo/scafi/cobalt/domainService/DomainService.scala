@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 /**
   * Created by tfarneti.
   */
-object DomainService extends App with TestConfig with AkkaHttpConfig with RedisConfiguration{
+object DomainService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher

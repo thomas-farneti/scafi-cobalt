@@ -31,9 +31,7 @@ class IngestionApiComponent(publisher : RabbitPublisher) { self: IngestionApiCom
 
   val metricsEndpoint = new MetricsEndpoint(CollectorRegistry.defaultRegistry)
 //  DefaultExports.initialize()
-  val requests: Counter = Counter.build().name("ingestion_requests_total").help("Total requests.").register()
-  val connectedDevices: Gauge = Gauge.build().name("ingestion_connected_devices"). help("Connected devices").register()
-
+  val requests: Counter = Counter.build().name("ingestion_messageIngested").help("Total requests.").register()
 
   val routes: Route = putSensorData ~ sensorsDataStreaming ~ metricsEndpoint.metricsRoute
 

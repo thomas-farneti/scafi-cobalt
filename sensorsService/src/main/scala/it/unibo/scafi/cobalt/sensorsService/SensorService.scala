@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContextExecutor
 /**
   * Created by tfarneti.
   */
-object SensorService extends App with TestConfig with RedisConfiguration with AkkaHttpConfig{
+object SensorService extends App with DockerConfig with RedisConfiguration with AkkaHttpConfig{
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher

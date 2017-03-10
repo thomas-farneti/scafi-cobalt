@@ -1,12 +1,13 @@
 package it.unibo.scafi.cobalt.executionService
 
+import java.time.{Duration, LocalDate, LocalDateTime, Period}
 import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
-import io.prometheus.client.Counter
+import io.prometheus.client.{Counter, Histogram}
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.{DeviceSensorsUpdated, FieldUpdated}
@@ -62,6 +63,7 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
 
   val pub = new RabbitPublisher(connection)
   val processed: Counter = Counter.build().name("execution_messageProcessed").help("Total requests.").register()
+  val latency: Histogram = Histogram.build().name("execution_latency").help("Latency").register()
 
   pub.sourceFromRabbit[DeviceSensorsUpdated]("sensor_events.executionService.queue")
    .mapAsync(1)(data => {
@@ -69,7 +71,12 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     env.service.execRound(data.deviceId).map(a => data -> a)
   })
   .withAttributes(supervisionStrategy(resumingDecider))
-  .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",s._1.deviceId,s._1.lat,s._1.lon,s._2))
+  .map(m => {
+    val lat =  Duration.between(m._1.timestamp, LocalDateTime.now()).abs().getNano()
+    latency.observe(lat)
+    m
+  })
+  .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",LocalDateTime.now(),s._1.deviceId,s._1.lat,s._1.lon,s._2))
   .alsoTo(Sink.foreach(_ => processed.inc()))
   .runWith(pub.sinkToRabbit("field_events", "FieldUpdated"))
 }

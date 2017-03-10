@@ -140,9 +140,10 @@ lazy val testDevice = project.
   settings(
     name := "testdevice",
     version := "0.1.0",
-    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,sprayJson)
+    libraryDependencies ++= Seq(scafi_core,akkaHTTP,akkaStream,akkaActor,akkaRemote,sprayJson,reactiveRabbit),
+    dockerUpdateLatest := true
   )
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
 
 lazy val sensorsService = project.
   dependsOn(common).

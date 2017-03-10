@@ -4,25 +4,29 @@ services:
 
   ingestion:
     image: scaficobalt/ingestionservice:latest
+    ports:
+      - "80:8080"
     deploy:
-      replicas: 1
+      replicas: 2
 
   domain:
     image: scaficobalt/domainservice:latest
     depends_on:
       - ingestion
     deploy:
-      replicas: 1
+      replicas: 5
 
   execution:
     image: scaficobalt/executionservice:latest
     depends_on:
       - ingestion
     deploy:
-      replicas: 1
+      replicas: 5
 
   sensor:
     image: scaficobalt/sensorservice:latest
+    deploy:
+      replicas: 2
 
   visualizerService:
     image: scaficobalt/visualizerservice:latest

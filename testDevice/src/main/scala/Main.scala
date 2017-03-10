@@ -21,7 +21,7 @@ import scala.concurrent.duration._
 import scala.util.Failure
 
 
-object Main extends App {
+object Main extends App{
   implicit val system = ActorSystem()
 
   implicit def ec = system.dispatcher
@@ -32,7 +32,7 @@ object Main extends App {
 
   val r = new scala.util.Random
 
-  val pool = Http().cachedHostConnectionPool[DeviceData]("localhost", 8080)
+  val pool = Http().cachedHostConnectionPool[DeviceData]("52.166.205.225", 80)
   //val lines = scala.io.Source.fromFile("/Users/Thomas/IdeaProjects/scafi-cobalt/testDevice/src/main/Resources/points.txt").getLines().toArray
   var cont = 0
 
@@ -51,7 +51,7 @@ object Main extends App {
         HttpRequest(method = HttpMethods.POST, uri = Uri("/deviceDataStream"), entity = e) -> data
       }
     }
-    .throttle(1, 15 milliseconds, 1, ThrottleMode.shaping)
+    //.throttle(1, 25 milliseconds, 1, ThrottleMode.shaping)
     .via(pool)
     .runForeach {
       case (scala.util.Success(response), data) =>

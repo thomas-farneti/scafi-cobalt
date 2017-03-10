@@ -1,5 +1,6 @@
 package it.unibo.scafi.cobalt.ingestionService.impl
 
+import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
 
 import akka.Done
@@ -56,7 +57,7 @@ class IngestionApiComponent(publisher : RabbitPublisher) { self: IngestionApiCom
 
         val measurementsSubmitted = data.
         alsoTo(persistData).
-        map(d => DeviceSensorsUpdated(UUID.randomUUID().toString,"DeviceSensorsUpdated",d.deviceId,d.lat,d.lon,d.sensorsData)).
+        map(d => DeviceSensorsUpdated(UUID.randomUUID().toString,"DeviceSensorsUpdated",LocalDateTime.now(),d.deviceId,d.lat,d.lon,d.sensorsData)).
         log("before-publish").
         withAttributes(Attributes.logLevels(onElement = Logging.DebugLevel)).
         alsoTo(publisher.sinkToRabbit("sensor_events", "DeviceSensorsUpdated")).

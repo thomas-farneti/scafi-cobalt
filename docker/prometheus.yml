@@ -14,7 +14,7 @@ scrape_configs:
     consul_sd_configs:
       - server: 'consul:8500'
 
-#    static_configs:
+    static_configs:
 #      - targets: ['domain:8080']
 #      - targets: ['execution:8080']
-#      - targets: ['ingestion:8080']
+      - targets: ['ingestion:8080']

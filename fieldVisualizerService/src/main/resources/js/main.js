@@ -1,7 +1,7 @@
 var self = this;
 var rainbow = new Rainbow();
 rainbow.setSpectrum('red', 'FFFFFF', '#00ff00');
-rainbow.setNumberRange(0, 25);
+rainbow.setNumberRange(0, 50);
 
 self.getWebsocket = function () {
     var path = "ws://" + window.location.hostname + ":8001/ws/devices";

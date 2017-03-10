@@ -6,7 +6,7 @@ services:
     image: rabbitmq:3-management
     ports:
       - "15672:15672"
-
+      - "5672:5672"
   consul:
     image: consul:latest
     ports:
@@ -29,7 +29,15 @@ services:
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock"
 
-  redis:
+  ingestiondb:
+    image: redis
+    ports:
+      - "6379"
+  executiondb:
+    image: redis
+    ports:
+      - "6379"
+  domaindb:
     image: redis
     ports:
       - "6379"

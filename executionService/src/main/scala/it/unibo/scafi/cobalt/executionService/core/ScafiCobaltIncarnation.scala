@@ -1,12 +1,11 @@
-package it.unibo.scafi.cobalt.executionService.impl.scafi
+package it.unibo.scafi.cobalt.executionService.core
 
-import it.unibo.scafi.cobalt.executionService.core.ExecutionServiceCore
 import it.unibo.scafi.incarnations.Incarnation
 
 /**
   * Created by tfarneti.
   */
-trait ScafiIncarnation extends ExecutionServiceCore with Incarnation{
+object ScafiCobaltIncarnation extends Incarnation with Serializable{
   override type LSNS = String
   override type NSNS = String
   override type ID = String

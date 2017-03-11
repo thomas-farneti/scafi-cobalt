@@ -4,7 +4,7 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import akka.util.ByteString
 import it.unibo.scafi.cobalt.common.infrastructure.ActorSystemProvider
-import it.unibo.scafi.cobalt.executionService.core.ExecutionRepositoryComponent
+import it.unibo.scafi.cobalt.executionService.core.{ExecutionRepositoryComponent, ScafiCobaltIncarnation}
 import it.unibo.scafi.cobalt.executionService.impl.RedisConfiguration
 import redis.{ByteStringFormatter, RedisClient}
 
@@ -14,6 +14,7 @@ import scala.concurrent.Future
   * Created by tfarneti.
   */
 
+import ScafiCobaltIncarnation._
 
 trait ScafiRedisExecutionRepoComponent extends ExecutionRepositoryComponent {self: ScafiRedisExecutionRepoComponent.dependencies =>
   val redisClient: RedisClient
@@ -31,5 +32,5 @@ trait ScafiRedisExecutionRepoComponent extends ExecutionRepositoryComponent {sel
 }
 
 object ScafiRedisExecutionRepoComponent{
-  type dependencies = ScafiIncarnation with RedisConfiguration with ActorSystemProvider
+  type dependencies =  ActorSystemProvider
 }

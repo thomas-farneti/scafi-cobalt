@@ -1,13 +1,13 @@
 package it.unibo.scafi.cobalt.executionService.impl.scafi
 
-import it.unibo.scafi.cobalt.executionService.core.ExecutionGatewayComponent
+import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ScafiCobaltIncarnation}
 
 import scala.concurrent.Future
-
+import ScafiCobaltIncarnation._
 /**
   * Created by tfarneti.
   */
-trait ScafiMockExecutionGatewayComponent extends ExecutionGatewayComponent{ self: ScafiIncarnation =>
+trait ScafiMockExecutionGatewayComponent extends ExecutionGatewayComponent{
   override def gateway = new ScafiGateway
 
     class ScafiGateway extends Gateway{

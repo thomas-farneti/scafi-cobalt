@@ -1,11 +1,11 @@
 package it.unibo.scafi.cobalt.executionService.impl.scafi
 
 import it.unibo.scafi.cobalt.common.infrastructure.ExecutionContextProvider
-import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent}
+import it.unibo.scafi.cobalt.executionService.core.{ExecutionGatewayComponent, ExecutionRepositoryComponent, ExecutionServiceComponent, ScafiCobaltIncarnation}
 
 import scala.collection.Map
 import scala.concurrent.Future
-
+import ScafiCobaltIncarnation._
 /**
   * Created by tfarneti.
   */
@@ -73,5 +73,5 @@ trait ScafiExecutionServiceComponent extends ExecutionServiceComponent{ self: Sc
 }
 
 object ScafiExecutionServiceComponent {
-  type dependencies =  ExecutionGatewayComponent with ExecutionRepositoryComponent with ScafiIncarnation with ExecutionContextProvider
+  type dependencies =  ExecutionGatewayComponent with ExecutionRepositoryComponent with ExecutionContextProvider
 }

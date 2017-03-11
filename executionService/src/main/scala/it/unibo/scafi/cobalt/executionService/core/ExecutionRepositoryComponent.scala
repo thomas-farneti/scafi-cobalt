@@ -2,10 +2,12 @@ package it.unibo.scafi.cobalt.executionService.core
 
 import scala.concurrent.Future
 
+import ScafiCobaltIncarnation._
+
 /**
   * Created by tfarneti.
   */
-trait ExecutionRepositoryComponent { self: ExecutionServiceCore =>
+trait ExecutionRepositoryComponent {
   def repository: Repository
 
   trait Repository{

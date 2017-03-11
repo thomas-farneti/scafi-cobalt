@@ -1,11 +1,11 @@
 package it.unibo.scafi.cobalt.executionService.core
 
 import scala.concurrent.Future
-
+import ScafiCobaltIncarnation._
 /**
   * Created by tfarneti.
   */
-trait ExecutionGatewayComponent { self: ExecutionServiceCore =>
+trait ExecutionGatewayComponent {
   def gateway : Gateway
 
   trait Gateway{

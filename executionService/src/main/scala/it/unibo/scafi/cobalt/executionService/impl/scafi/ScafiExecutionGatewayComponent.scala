@@ -24,5 +24,5 @@ trait ScafiExecutionGatewayComponent extends ExecutionGatewayComponent{ self: Sc
 }
 
 object ScafiExecutionGatewayComponent{
-  type dependencies = ScafiIncarnation with ServicesConfiguration with ActorSystemProvider with ExecutionContextProvider
+  type dependencies =  ServicesConfiguration with ActorSystemProvider with ExecutionContextProvider
 }

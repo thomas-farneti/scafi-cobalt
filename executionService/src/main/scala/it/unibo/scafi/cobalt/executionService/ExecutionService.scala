@@ -1,36 +1,34 @@
 package it.unibo.scafi.cobalt.executionService
 
-import java.time.{Duration, LocalDate, LocalDateTime, Period}
+import java.time.{Duration, LocalDateTime}
 import java.util.UUID
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import io.prometheus.client.{Counter, Histogram}
 import io.scalac.amqp._
 import it.unibo.scafi.cobalt.common.infrastructure.{ActorMaterializerProvider, ActorSystemProvider, ExecutionContextProvider, RabbitPublisher}
 import it.unibo.scafi.cobalt.common.messages.{DeviceSensorsUpdated, FieldUpdated}
+import it.unibo.scafi.cobalt.executionService.core.ScafiCobaltIncarnation
 import it.unibo.scafi.cobalt.executionService.impl._
-import it.unibo.scafi.cobalt.executionService.impl.cobalt._
+import it.unibo.scafi.cobalt.executionService.impl.scafi.{ScafiExecutionGatewayComponent, ScafiExecutionServiceComponent, ScafiRedisExecutionRepoComponent}
 import redis.RedisClient
 
 import scala.concurrent.ExecutionContext
 
 
-trait Environment extends ExecutionApiComponent
-  with CobaltExecutionServiceComponent
-  with CobaltRedisExecutionRepositoryComponent
-  with CobaltExecutionGatewayComponent
-  with CobaltBasicIncarnation
+trait Environment extends
+  ScafiExecutionServiceComponent
+  with ScafiRedisExecutionRepoComponent
+  with ScafiExecutionGatewayComponent
   with DockerConfig
   with ServicesConfiguration
   with ActorSystemProvider
   with ActorMaterializerProvider
   with ExecutionContextProvider
 
-
-object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration with CobaltBasicIncarnation{
+object ExecutionService extends App with DockerConfig with AkkaHttpConfig with RedisConfiguration{
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit def executionContext = system.dispatcher
@@ -44,7 +42,7 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     override implicit val impSystem: ActorSystem = system
   }
 
-  Http().bindAndHandle(env.executionRoutes, interface, port)
+  //Http().bindAndHandle(env.executionRoutes, interface, port)
 
   val requestsServed = Counter.build()
     .name("requests_served_total")
@@ -76,7 +74,7 @@ object ExecutionService extends App with DockerConfig with AkkaHttpConfig with R
     latency.observe(lat)
     m
   })
-  .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",LocalDateTime.now(),s._1.deviceId,s._1.lat,s._1.lon,s._2))
+  .map(s => FieldUpdated(UUID.randomUUID().toString,"FieldUpdated",LocalDateTime.now(),s._1.deviceId,s._1.lat,s._1.lon,s._2.root()))
   .alsoTo(Sink.foreach(_ => processed.inc()))
   .runWith(pub.sinkToRabbit("field_events", "FieldUpdated"))
 }
